@@ -533,4 +533,5 @@ deactivate
 # Disable the trap before exiting
 trap - ERR
 
-curl -sSL https://raw.githubusercontent.com/scidsg/blackbox/main/v2/waveshare-2_7in-qr-eink-display-v2-beta.sh | bash
+chmod +x /home/hush/blackbox/v2/display-v2.sh
+./home/hush/blackbox/v2/display-v2.sh
