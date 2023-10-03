@@ -1,6 +1,6 @@
 # Building your own Blackbox
 
-Most Hush Line users should follow [**this documentation**](https://scidsg.github.io/hushline-docs/book/intro.html). If you'd really like to set up your own Blackbox Hush Line, read and follow the instructions in this document.
+<!-- Most Hush Line users should follow [**this documentation**](https://scidsg.github.io/hushline-docs/book/intro.html). If you'd really like to set up your own Blackbox Hush Line, read and follow the instructions in this document. -->
 
 ## Required Hardware
 
@@ -77,12 +77,12 @@ Now we're ready to install Hush Line.
 
 If your e-ink display is `Rev2.2`, run:
 ```bash
-curl -sSL https://raw.githubusercontent.com/scidsg/blackbox/main/v2/blackbox-img-helper.sh | bash
+curl -sSL https://raw.githubusercontent.com/scidsg/blackbox/main/v2/helper.sh | bash
 ```
 
 If it's `Rev2.1`, run:
 ```bash
-curl -sSL https://raw.githubusercontent.com/scidsg/blackbox/main/v2/blackbox-img-helper.sh | bash
+curl -sSL https://raw.githubusercontent.com/scidsg/blackbox/main/v1/helper.sh | bash
 ```
 
 **Step 11**: After some programs install, you'll be asked to enter your Pi's username. Delete the default username (`Pi`) and enter `hush` instead.
