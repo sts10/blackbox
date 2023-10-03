@@ -8,15 +8,16 @@ Most Hush Line users should follow [**this documentation**](https://scidsg.githu
 - **Power:** [Raspberry Pi USB-C Power Supply](https://www.amazon.com/Raspberry-Pi-USB-C-Power-Supply/dp/B07W8XHMJZ?crid=20ZD3IB2N877C&keywords=raspberry%2Bpi%2Bpower%2Bsupply&qid=1696270477&sprefix=raspberry%2Bpi%2Bpower%2B%2Caps%2C140&sr=8-5&th=1&linkCode=ll1&tag=scidsg-20&linkId=fa55eb4c089361952be8285bf67bfd22&language=en_US&ref_=as_li_ss_tl)
 - **Storage:** [Micro SD Card](https://www.amazon.com/Sandisk-Ultra-Micro-UHS-I-Adapter/dp/B073K14CVB?crid=1XCUWSKV8V2L1&keywords=microSD+card&qid=1696270565&sprefix=microsd+car%2Caps%2C137&sr=8-21&linkCode=ll1&tag=scidsg-20&linkId=a2865a28ae852876a5a6d27512e9d7ef&language=en_US&ref_=as_li_ss_tl)
 - **SD Card Adapter:** [SD Card Reader](https://www.amazon.com/SanDisk-MobileMate-microSD-Card-Reader/dp/B07G5JV2B5?crid=3ESM9TOJBH8J7&keywords=microsd+card+adaptor+usb+sandisk&qid=1696270641&sprefix=microsd+card+adaptor+usb+sandisk%2Caps%2C135&sr=8-3&linkCode=ll1&tag=scidsg-20&linkId=90d3bed4e490d29d84bcf86d9fe75290&language=en_US&ref_=as_li_ss_tl) 
+- **e-ink Screen:** [Waveshare 2.7inch E-Ink Display](https://www.amazon.com/2-7inch-HAT-Resolution-Electronic-Communicating/dp/B075FQKSZ9/?_encoding=UTF8&pd_rd_w=hNy2N&content-id=amzn1.sym.5f7e0a27-49c0-47d3-80b2-fd9271d863ca%3Aamzn1.symc.e5c80209-769f-4ade-a325-2eaec14b8e0e&pf_rd_p=5f7e0a27-49c0-47d3-80b2-fd9271d863ca&pf_rd_r=KQ1ZCPA2Q08D1SW2GYJH&pd_rd_wg=mepbv&pd_rd_r=e97f3e03-7e7d-4165-84e8-3face81f7190&ref_=pd_gw_ci_mcx_mr_hp_atf_m)
 - _Affiliate links_
 
 You'll also need a separate computer which you'll use to decrypt and view Hush Line messages.
 
 ## Procedure
 
-1. Download Raspberry Pi Imager from [https://www.raspberrypi.com/software/](https://www.raspberrypi.com/software/)
+**Step 1**: Download Raspberry Pi Imager from [https://www.raspberrypi.com/software/](https://www.raspberrypi.com/software/)
 
-2. Insert microSD and prepare to flash Raspberry Pi OS. 
+**Step 2**: Insert microSD and prepare to flash Raspberry Pi OS. 
 * Choose OS > Raspberry Pi OS (other) > Raspberry Pi OS (64-Bit).
 * Select the location of your microSD card.
 * BEFORE you click "Write", click the gear button in the corner. 
@@ -27,17 +28,19 @@ Enter these settings:
     Set a strong password
     Enter your wireless (LAN) settings if your Pi will use wifi to connect to the internet
 
-3. Now click "Write". This will take a moment to complete.
+**Step 3**: Now click "Write". This will take a moment to complete.
 
-3. When the Pi Imager program is done writing, unplug your microSD card from your computer.
+**Step 4**: When the Pi Imager program is done writing, unplug your microSD card from your computer.
 
-4. Plug MicroSD card in to your Pi. With the power cable NOT plugged in, plug in e-ink screen. Now plug the power cable into the outlet. Your Pi should boot up.
+**Step 5**: On the back of your Waveshare e-ink display, note which "Rev" it is: e.g. 2.1 or 2.2.
 
-5. Wait 5 minutes. 
+**Step 6**: Plug MicroSD card in to your Pi. With the power cable NOT plugged in, plug in e-ink screen. Now plug the power cable into the outlet. Your Pi should boot up.
 
-6. Back on viewing computer, run `ssh hush@hushline.local`. If you get an error that `ssh: Could not resolve hostname hushline.local: Name or service not known`, that likely just means that your Pi is still booting up and connecting to your wifi network. Wait a few minutes, and then try again.
+**Step 7**: Wait 5 minutes. 
 
-7. If it was successful, you'll see something like:
+**Step 8**: Back on viewing computer, run `ssh hush@hushline.local`. If you get an error that `ssh: Could not resolve hostname hushline.local: Name or service not known`, that likely just means that your Pi is still booting up and connecting to your wifi network. Wait a few minutes, and then try again.
+
+**Step 9**: If it was successful, you'll see something like:
 ```bash
 $ ssh hush@hushline.local
 The authenticity of host 'hushline.local (192.168.X.XX)' can't be established.
@@ -64,32 +67,41 @@ Last login: Tue May  2 23:23:49 2023
 hush@hushline:~ $ 
 ```
 
-8. Now that we can run commands on the Pi, run:
+**Step 10**: Now that we can run commands on the Pi, run:
 ```bash
 sudo su
 ```
 and enter your password. 
 
-Then
+Now we're ready to install Hush Line. 
+
+If your e-ink display is `Rev2.2`, run:
 ```bash
 curl -sSL https://raw.githubusercontent.com/scidsg/blackbox/main/v2/blackbox-img-helper.sh | bash
 ```
 
-9. After some programs install, you'll be asked to enter your Pi's username. Delete the default username (`Pi`) and enter `hush` instead.
+If it's `Rev2.1`, run:
+```bash
+curl -sSL https://raw.githubusercontent.com/scidsg/blackbox/main/v2/blackbox-img-helper.sh | bash
+```
 
-10. Next, in the Raspberry configuration menu, arrow down to "Interface Options". In that sub-menu, choose to enable SPI interface.
+**Step 11**: After some programs install, you'll be asked to enter your Pi's username. Delete the default username (`Pi`) and enter `hush` instead.
 
-11. Reboot Pi by running `reboot` or unplugging your Pi and then plugging it in again.
+**Step 12**: Next, in the Raspberry configuration menu, arrow down to "Interface Options". In that sub-menu, choose to enable SPI interface.
 
-12. When your Pi boots up again, after a few minutes, check the e-ink screen for a QR code. This QR code leads to [http://hushline.local:5000/setup](http://hushline.local:5000/setup)
+**Step 13**: Reboot Pi by running `reboot` or unplugging your Pi and then plugging it in again.
 
-13. Over on viewing computer, open [http://hushline.local:5000/setup](http://hushline.local:5000/setup) in a browser (ignore any HTTPS warnings) and fill out form with your Hush Line email information (see [this documentation for instructions](https://scidsg.github.io/hushline-docs/book/prereqs/general.html#2-gmail)).
+**Step 14**: When your Pi boots up again, after a few minutes, check the e-ink screen for a QR code. This QR code leads to [http://hushline.local:5000/setup](http://hushline.local:5000/setup)
+
+**Step 15**: Over on viewing computer, open [http://hushline.local:5000/setup](http://hushline.local:5000/setup) in a browser (ignore any HTTPS warnings) and fill out form with your Hush Line email information (see [this documentation for instructions](https://scidsg.github.io/hushline-docs/book/prereqs/general.html#2-gmail)).
 
 Note: If you're using [Mailvelope](https://mailvelope.com/en/) to generate a new PGP key-pair, you'll need to export (save) your public key as a file, and then manually upload this public key file to [keys.openpgp.org.](https://keys.openpgp.org/) Do NOT upload your private PGP key!
 
-14. Once who've completely filled out this form, hit submit. In a few minutes, you should receive a confirmation email, which, among other things, contains your Hush Line address. 
+**Step 16**: Once who've completely filled out this form, hit submit. In a few minutes, you should receive a confirmation email, which, among other things, contains your Hush Line address. 
 
-15. Share your new Hush Line address with your community, along with instructions on how to [download and install the Tor Browser](https://www.torproject.org/download/).
+**Step 17**: Share your new Hush Line address with your community, along with instructions on how to [download and install the Tor Browser](https://www.torproject.org/download/). 
+
+If your community faces [a high threat](https://scidsg.github.io/hushline-docs/book/prereqs/threat-modeling.html), recommend to them that they better protect their anonymity by only visiting your Hush Line address on personal devices while using a public WiFi network. [Read more about threat modeling here.](https://scidsg.github.io/hushline-docs/book/prereqs/threat-modeling.html)
 
 ## Reference
 [https://scidsg.github.io/hushline-docs/book/prereqs/raspberrypi.html](https://scidsg.github.io/hushline-docs/book/prereqs/raspberrypi.html)
