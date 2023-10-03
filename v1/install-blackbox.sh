@@ -2,8 +2,8 @@
 
 #Run as root
 if [[ $EUID -ne 0 ]]; then
-  echo "Script needs to run as root. Elevating permissions now."
-  exec sudo /bin/bash "$0" "$@"
+    echo "Script needs to run as root. Elevating permissions now."
+    exec sudo /bin/bash "$0" "$@"
 fi
 
 # Function to display error message and exit
@@ -461,7 +461,7 @@ else
 fi
 
 send_email() {
-    python3 << END
+    python3 <<END
 import smtplib
 import os
 from email.mime.multipart import MIMEMultipart
