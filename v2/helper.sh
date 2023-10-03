@@ -15,7 +15,7 @@ apt update && apt -y dist-upgrade && apt -y autoremove
 
 git clone https://github.com/scidsg/hushline.git
 git clone https://github.com/scidsg/blackbox.git
-chmod +x /home/hush/blackbox/v1/qr-installer-beta.sh
+chmod +x /home/hush/blackbox/v2/qr-installer-beta.sh
 
 # Create a new script to display status on the e-ink display
 cat >/etc/systemd/system/blackbox-installer.service <<EOL
@@ -24,7 +24,7 @@ Description=Blackbox Installation Helper
 After=multi-user.target
 
 [Service]
-ExecStart=/home/hush/blackbox/v1/qr-installer-beta.sh
+ExecStart=/home/hush/blackbox/v2/install-blackbox.sh
 Type=oneshot
 RemainAfterExit=yes
 

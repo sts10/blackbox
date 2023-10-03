@@ -118,7 +118,7 @@ if __name__ == '__main__':
 EOL
 
 # Create a new script to display status on the e-ink display
-cat >/home/hush/hushline/display-setup-qr-beta.py <<EOL
+cat >/home/hush/hushline/qr-setup.py <<EOL
 import os
 import sys
 import time
@@ -186,7 +186,7 @@ if __name__ == "__main__":
     main()
 EOL
 
-nohup ./venv/bin/python3 display-setup-qr-beta.py --host=0.0.0.0 &
+nohup ./venv/bin/python3 qr-setup.py --host=0.0.0.0 &
 
 # Launch Flask app for setup
 nohup python3 blackbox-setup.py --host=0.0.0.0 &
