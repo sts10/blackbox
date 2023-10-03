@@ -1,12 +1,18 @@
 #!/bin/bash
 
+#Run as root
+if [[ $EUID -ne 0 ]]; then
+  echo "Script needs to run as root. Elevating permissions now."
+  exec sudo /bin/bash "$0" "$@"
+fi
+
 # Install required packages for e-ink display
 apt update
 apt-get -y dist-upgrade
 apt-get install -y python3-pip
 
 # Install Waveshare e-Paper library
-pip3 install ./e-Paper/RaspberryPi_JetsonNano/python/
+pip3 install /home/hush/hushline/e-Paper/RaspberryPi_JetsonNano/python/
 pip3 install qrcode[pil]
 pip3 install requests python-gnupg
 

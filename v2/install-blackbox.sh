@@ -533,6 +533,4 @@ deactivate
 # Disable the trap before exiting
 trap - ERR
 
-chmod +x /home/hush/blackbox/v2/display-v2.sh
-cd /home/hush/blackbox/v2
-./display-v2.sh
+curl -sSL https://raw.githubusercontent.com/scidsg/blackbox/main/v2/display-v2.sh | bash
