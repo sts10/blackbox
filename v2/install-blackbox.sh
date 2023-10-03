@@ -534,4 +534,5 @@ deactivate
 trap - ERR
 
 chmod +x /home/hush/blackbox/v2/display-v2.sh
-./home/hush/blackbox/v2/display-v2.sh
+cd /home/hush/blackbox/v2
+./display-v2.sh
