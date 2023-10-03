@@ -1,0 +1,97 @@
+# Building your own Blackbox
+
+Most Hush Line users should follow [**this documentation**](https://scidsg.github.io/hushline-docs/book/intro.html). If you'd really like to set up your own Blackbox Hush Line, read and follow the instructions in this document.
+
+## Required Hardware
+
+- **Hardware:** [Raspberry Pi 4](https://www.amazon.com/Raspberry-Model-2019-Quad-Bluetooth/dp/B07TC2BK1X/?&_encoding=UTF8&tag=scidsg-20&linkCode=ur2&linkId=ee402e41cd98b8767ed54b1531ed1666&camp=1789&creative=9325)/[3B+](https://www.amazon.com/ELEMENT-Element14-Raspberry-Pi-Motherboard/dp/B07P4LSDYV/?&_encoding=UTF8&tag=scidsg-20&linkCode=ur2&linkId=d76c1db453c42244fe465c9c56601303&camp=1789&creative=9325)
+- **Power:** [Raspberry Pi USB-C Power Supply](https://www.amazon.com/Raspberry-Pi-USB-C-Power-Supply/dp/B07W8XHMJZ?crid=20ZD3IB2N877C&keywords=raspberry%2Bpi%2Bpower%2Bsupply&qid=1696270477&sprefix=raspberry%2Bpi%2Bpower%2B%2Caps%2C140&sr=8-5&th=1&linkCode=ll1&tag=scidsg-20&linkId=fa55eb4c089361952be8285bf67bfd22&language=en_US&ref_=as_li_ss_tl)
+- **Storage:** [Micro SD Card](https://www.amazon.com/Sandisk-Ultra-Micro-UHS-I-Adapter/dp/B073K14CVB?crid=1XCUWSKV8V2L1&keywords=microSD+card&qid=1696270565&sprefix=microsd+car%2Caps%2C137&sr=8-21&linkCode=ll1&tag=scidsg-20&linkId=a2865a28ae852876a5a6d27512e9d7ef&language=en_US&ref_=as_li_ss_tl)
+- **SD Card Adapter:** [SD Card Reader](https://www.amazon.com/SanDisk-MobileMate-microSD-Card-Reader/dp/B07G5JV2B5?crid=3ESM9TOJBH8J7&keywords=microsd+card+adaptor+usb+sandisk&qid=1696270641&sprefix=microsd+card+adaptor+usb+sandisk%2Caps%2C135&sr=8-3&linkCode=ll1&tag=scidsg-20&linkId=90d3bed4e490d29d84bcf86d9fe75290&language=en_US&ref_=as_li_ss_tl) 
+- _Affiliate links_
+
+You'll also need a separate computer which you'll use to decrypt and view Hush Line messages.
+
+## Procedure
+
+1. Download Raspberry Pi Imager from [https://www.raspberrypi.com/software/](https://www.raspberrypi.com/software/)
+
+2. Insert microSD and prepare to flash Raspberry Pi OS. 
+* Choose OS > Raspberry Pi OS (other) > Raspberry Pi OS (64-Bit).
+* Select the location of your microSD card.
+* BEFORE you click "Write", click the gear button in the corner. 
+Enter these settings:
+    Hostname = `hushline`
+    Choose to Enable SSH with password authentication
+    User = `hush`
+    Set a strong password
+    Enter your wireless (LAN) settings if your Pi will use wifi to connect to the internet
+
+3. Now click "Write". This will take a moment to complete.
+
+3. When the Pi Imager program is done writing, unplug your microSD card from your computer.
+
+4. Plug MicroSD card in to your Pi. With the power cable NOT plugged in, plug in e-ink screen. Now plug the power cable into the outlet. Your Pi should boot up.
+
+5. Wait 5 minutes. 
+
+6. Back on viewing computer, run `ssh hush@hushline.local`. If you get an error that `ssh: Could not resolve hostname hushline.local: Name or service not known`, that likely just means that your Pi is still booting up and connecting to your wifi network. Wait a few minutes, and then try again.
+
+7. If it was successful, you'll see something like:
+```bash
+$ ssh hush@hushline.local
+The authenticity of host 'hushline.local (192.168.X.XX)' can't be established.
+ED25519 key fingerprint is SHA256: <fingerprint>
+This key is not known by any other names
+Are you sure you want to continue connecting (yes/no/[fingerprint])? 
+```
+
+Type `yes` and hit enter.
+
+You'll then be asked to enter "hush@hushline.local's password". Enter the password you created in step 2 (tip: If you need to paste your password, use `command+shift+v`).
+
+If you enter your password correctly, you'll see a message like this:
+```text
+Linux hushline 6.1.21-v8+ #1642 SMP PREEMPT Mon Apr  3 17:24:16 BST 2023 aarch64
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Tue May  2 23:23:49 2023
+hush@hushline:~ $ 
+```
+
+8. Now that we can run commands on the Pi, run:
+```bash
+sudo su
+```
+and enter your password. 
+
+Then
+```bash
+curl -sSL https://raw.githubusercontent.com/scidsg/blackbox/main/v2/blackbox-img-helper.sh | bash
+```
+
+9. After some programs install, you'll be asked to enter your Pi's username. Delete the default username (`Pi`) and enter `hush` instead.
+
+10. Next, in the Raspberry configuration menu, arrow down to "Interface Options". In that sub-menu, choose to enable SPI interface.
+
+11. Reboot Pi by running `reboot` or unplugging your Pi and then plugging it in again.
+
+12. When your Pi boots up again, after a few minutes, check the e-ink screen for a QR code. This QR code leads to [http://hushline.local:5000/setup](http://hushline.local:5000/setup)
+
+13. Over on viewing computer, open [http://hushline.local:5000/setup](http://hushline.local:5000/setup) in a browser (ignore any HTTPS warnings) and fill out form with your Hush Line email information (see [this documentation for instructions](https://scidsg.github.io/hushline-docs/book/prereqs/general.html#2-gmail)).
+
+Note: If you're using [Mailvelope](https://mailvelope.com/en/) to generate a new PGP key-pair, you'll need to export (save) your public key as a file, and then manually upload this public key file to [keys.openpgp.org.](https://keys.openpgp.org/) Do NOT upload your private PGP key!
+
+14. Once who've completely filled out this form, hit submit. In a few minutes, you should receive a confirmation email, which, among other things, contains your Hush Line address. 
+
+15. Share your new Hush Line address with your community, along with instructions on how to [download and install the Tor Browser](https://www.torproject.org/download/).
+
+## Reference
+[https://scidsg.github.io/hushline-docs/book/prereqs/raspberrypi.html](https://scidsg.github.io/hushline-docs/book/prereqs/raspberrypi.html)
+
+[https://www.raspberrypi.com/documentation/computers/remote-access.html](https://www.raspberrypi.com/documentation/computers/remote-access.html)
