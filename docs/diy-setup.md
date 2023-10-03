@@ -89,9 +89,9 @@ curl -sSL https://raw.githubusercontent.com/scidsg/blackbox/main/v1/helper.sh | 
 
 **Step 13**: Reboot Pi by running `reboot` or unplugging your Pi and then plugging it in again.
 
-**Step 14**: When your Pi boots up again, after a few minutes, check the e-ink screen for a QR code. This QR code leads to [http://hushline.local:5000/setup](http://hushline.local:5000/setup)
+**Step 14**: When your Pi boots up again, after a few minutes, check the e-ink screen for a QR code. This QR code leads to [http://blackbox.local:5000/setup](http://blackbox.local:5000/setup)
 
-**Step 15**: Over on viewing computer, open [http://hushline.local:5000/setup](http://hushline.local:5000/setup) in a browser (ignore any HTTPS warnings). Fill out form with your Blackbox email address information (we strongly recommend creating a new email account for Blackbox to use -- Gmail works well. See [this documentation for instructions](https://scidsg.github.io/hushline-docs/book/prereqs/general.html#2-gmail)).
+**Step 15**: Over on viewing computer, open [http://blackbox.local:5000/setup](http://blackbox.local:5000/setup) in a browser (ignore any HTTPS warnings). Fill out form with your Blackbox email address information (we strongly recommend creating a new email account for Blackbox to use -- Gmail works well. See [this documentation for instructions](https://scidsg.github.io/blackbox-docs/book/prereqs/general.html#2-gmail)).
 
 Note: If you're using [Mailvelope](https://mailvelope.com/en/) to generate a new PGP key-pair, you'll need to export (save) your public key as a file, and then manually upload this public key file to [keys.openpgp.org.](https://keys.openpgp.org/) Do NOT upload your private PGP key!
 
@@ -99,7 +99,7 @@ Note: If you're using [Mailvelope](https://mailvelope.com/en/) to generate a new
 
 **Step 17**: Share your new Blackbox URL with your community, along with instructions on how to [download and install the Tor Browser](https://www.torproject.org/download/). 
 
-If your community faces [a high threat](https://scidsg.github.io/hushline-docs/book/prereqs/threat-modeling.html), recommend to them that they better protect their anonymity by only visiting your Blackbox URL on personal devices while using a public WiFi network. [Read more about threat modeling here.](https://scidsg.github.io/hushline-docs/book/prereqs/threat-modeling.html)
+If your community faces [a higher threat](https://scidsg.github.io/hushline-docs/book/prereqs/threat-modeling.html), recommend to them that they better protect their anonymity by only visiting your Blackbox URL on personal devices while using a public WiFi network. [Read more about threat modeling here.](https://scidsg.github.io/hushline-docs/book/prereqs/threat-modeling.html)
 
 ## Reference
 [https://scidsg.github.io/hushline-docs/book/prereqs/raspberrypi.html](https://scidsg.github.io/hushline-docs/book/prereqs/raspberrypi.html)
