@@ -67,13 +67,6 @@ import socket
 
 app = Flask(__name__)
 
-@app.before_request
-def redirect_to_https():
-    if not request.is_secure and 'localhost' not in request.url:
-        url = request.url.replace('http://', 'https://', 1)
-        code = 301
-        return redirect(url, code=code)
-
 # Flag to indicate whether setup is complete
 setup_complete = os.path.exists('/tmp/setup_config.json')
 
@@ -123,12 +116,6 @@ if __name__ == '__main__':
         qr.terminal(out=f)
     app.run(host='hushline.local', port=5000)
 EOL
-
-if [ -e "/etc/nginx/sites-enabled/default" ]; then
-    rm /etc/nginx/sites-enabled/default
-fi
-ln -sf /etc/nginx/sites-available/hushline-setup.nginx /etc/nginx/sites-enabled/
-nginx -t && systemctl restart nginx || error_exit
 
 # Create a new script to display status on the e-ink display
 cat >/home/hush/hushline/qr-setup.py <<EOL
@@ -182,7 +169,7 @@ def main():
     epd.init()
 
     # Generate QR code for your URL or data
-    qr_code_image = generate_qr_code("https://hushline.local:5000/setup")
+    qr_code_image = generate_qr_code("http://hushline.local:5000/setup")
 
     # Clear frame memory
     epd.Clear(0xFF)
@@ -209,7 +196,7 @@ sleep 5
 # Display the QR code from the file
 cat /tmp/qr_code.txt
 
-echo "The Flask app for setup is running. Please complete the setup by navigating to https://hushline.local/setup."
+echo "The Flask app for setup is running. Please complete the setup by navigating to http://hushline.local:5000/setup."
 
 # Wait for user to complete setup form
 while [ ! -f "/tmp/setup_config.json" ]; do
@@ -244,6 +231,9 @@ Restart=always
 WantedBy=multi-user.target
 EOL
 
+# Make config read-only
+chmod 444 /etc/systemd/system/hush-line.service
+
 sudo systemctl daemon-reload
 sudo systemctl enable hush-line.service
 sudo systemctl start hush-line.service
@@ -273,21 +263,7 @@ ONION_ADDRESS=$(sudo cat /var/lib/tor/hidden_service/hostname)
 cat >/etc/nginx/sites-available/hush-line.nginx <<EOL
 server {
     listen 80;
-<<<<<<< HEAD
-    server_name hushline.local;
-    return 301 https://\$host\$request_uri;
-}
-
-server {
-    listen 443 ssl;
-    server_name hushline.local;
-
-    ssl_certificate /etc/nginx/hushline.local.pem;
-    ssl_certificate_key /etc/nginx/hushline.local-key.pem;
-
-=======
     server_name localhost;
->>>>>>> parent of b27cbf0 (Merge pull request #3 from scidsg/mkcert)
     location / {
         proxy_pass http://127.0.0.1:5000;
         proxy_set_header Host \$host;
