@@ -22,7 +22,9 @@ sudo apt update && sudo apt -y dist-upgrade && sudo apt -y autoremove
 sudo apt-get -y install git python3 python3-venv python3-pip nginx tor whiptail libnginx-mod-http-geoip geoip-database unattended-upgrades gunicorn libssl-dev net-tools jq fail2ban ufw golang-go
 
 # Build mkcert
-git clone https://github.com/FiloSottile/mkcert && cd mkcert
+git clone https://github.com/FiloSottile/mkcert 
+sleep 10
+cd mkcert
 go build -ldflags "-X main.Version=$(git describe --tags)"
 
 # Create a virtual environment and install dependencies
