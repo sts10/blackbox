@@ -19,7 +19,7 @@ trap error_exit ERR
 sudo apt update && sudo apt -y dist-upgrade && sudo apt -y autoremove
 
 # Install required packages
-sudo apt-get -y install git python3 python3-venv python3-pip nginx tor whiptail libnginx-mod-http-geoip geoip-database unattended-upgrades gunicorn libssl-dev net-tools jq fail2ban ufw mkcert
+sudo apt-get -y install git python3 python3-venv python3-pip nginx tor whiptail libnginx-mod-http-geoip geoip-database unattended-upgrades gunicorn libssl-dev net-tools jq fail2ban ufw
 
 # Create a virtual environment and install dependencies
 cd /home/hush/hushline
@@ -111,7 +111,7 @@ def index():
     return '👍 Successfully submitted! The installation script will now resume.'
 
 if __name__ == '__main__':
-    qr = segno.make(f'https://hushline.local:5000/setup')
+    qr = segno.make(f'http://hushline.local:5000/setup')
     with open("/tmp/qr_code.txt", "w") as f:
         qr.terminal(out=f)
     app.run(host='hushline.local', port=5000)
@@ -186,16 +186,11 @@ if __name__ == "__main__":
     main()
 EOL
 
-# Create a local CA
-mkcert -install
-
-# Generate certificates for hushline.local
-mkcert -key-file /etc/nginx/hushline.local-key.pem -cert-file /etc/nginx/hushline.local.pem hushline.local
-
 nohup ./venv/bin/python3 qr-setup.py --host=0.0.0.0 &
 
 # Launch Flask app for setup
-nohup ./venv/bin/python3 blackbox-setup.py --cert=/etc/nginx/hushline.local.pem --key=/etc/nginx/hushline.local-key.pem --host=0.0.0.0 &
+nohup python3 blackbox-setup.py --host=0.0.0.0 &
+
 sleep 5
 
 # Display the QR code from the file
@@ -264,39 +259,30 @@ sleep 10
 # Get the Onion address
 ONION_ADDRESS=$(sudo cat /var/lib/tor/hidden_service/hostname)
 
+# Configure Nginx
 cat >/etc/nginx/sites-available/hush-line.nginx <<EOL
 server {
     listen 80;
-    server_name hushline.local;
-    return 301 https://$host$request_uri;
-}
-
-server {
-    listen 443 ssl;
-    server_name hushline.local;
-
-    ssl_certificate /etc/nginx/hushline.local.pem;
-    ssl_certificate_key /etc/nginx/hushline.local-key.pem;
-
+    server_name localhost;
     location / {
         proxy_pass http://127.0.0.1:5000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
         proxy_connect_timeout 300s;
         proxy_send_timeout 300s;
         proxy_read_timeout 300s;
     }
-
-    add_header Strict-Transport-Security "max-age=63072000; includeSubdomains";
-    add_header X-Frame-Options DENY;
-    add_header Onion-Location http://$ONION_ADDRESS\$request_uri;
-    add_header X-Content-Type-Options nosniff;
-    add_header Content-Security-Policy "default-src 'self'; frame-ancestors 'none'";
-    add_header Permissions-Policy "geolocation=(), midi=(), notifications=(), push=(), sync-xhr=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), speaker=(), vibrate=(), fullscreen=(), payment=(), interest-cohort=()";
-    add_header Referrer-Policy "no-referrer";
-    add_header X-XSS-Protection "1; mode=block";
+    
+        add_header Strict-Transport-Security "max-age=63072000; includeSubdomains";
+        add_header X-Frame-Options DENY;
+        add_header Onion-Location http://$ONION_ADDRESS\$request_uri;
+        add_header X-Content-Type-Options nosniff;
+        add_header Content-Security-Policy "default-src 'self'; frame-ancestors 'none'";
+        add_header Permissions-Policy "geolocation=(), midi=(), notifications=(), push=(), sync-xhr=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), speaker=(), vibrate=(), fullscreen=(), payment=(), interest-cohort=()";
+        add_header Referrer-Policy "no-referrer";
+        add_header X-XSS-Protection "1; mode=block";
 }
 EOL
 
