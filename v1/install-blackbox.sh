@@ -24,9 +24,9 @@ sudo apt-get -y install git python3 python3-venv python3-pip nginx tor whiptail 
 # Install mkcert and its dependencies
 echo "Installing mkcert and its dependencies..."
 sudo apt install -y libnss3-tools
-wget https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-arm64
-chmod +x mkcert-v1.4.4-linux-arm64
-sudo mv mkcert-v1.4.4-linux-arm64 /usr/local/bin/mkcert
+wget https://github.com/FiloSottile/mkcert/releases/download/v1.4.3/mkcert-v1.4.3-linux-amd64
+sudo mv mkcert-v1.4.3-linux-amd64 /usr/local/bin/mkcert
+sudo chmod +x /usr/local/bin/mkcert
 mkcert -install
 
 # Create a certificate for hushline.local
@@ -208,8 +208,6 @@ nohup ./venv/bin/python3 qr-setup.py --host=0.0.0.0 &
 # Launch Flask app for setup
 nohup python3 blackbox-setup.py --host=0.0.0.0 &
 
-nohup ./venv/bin/python3 blackbox-setup.py --cert=/etc/nginx/hushline.local.pem --key=/etc/nginx/hushline.local-key.pem --host=0.0.0.0 &
-sudo mv hushline.local-key.pem /etc/nginx/
 sleep 5
 
 # Display the QR code from the file
