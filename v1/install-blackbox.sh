@@ -212,6 +212,9 @@ NOTIFY_SMTP_PORT=$(jq -r '.smtp_port' /tmp/setup_config.json)
 # Kill the Flask setup process
 pkill -f blackbox-setup.py
 
+# Make config read-only
+chmod 444 /tmp/setup_config.json
+
 # Create a systemd service
 cat >/etc/systemd/system/hush-line.service <<EOL
 [Unit]
