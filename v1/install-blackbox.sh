@@ -19,11 +19,7 @@ trap error_exit ERR
 sudo apt update && sudo apt -y dist-upgrade && sudo apt -y autoremove
 
 # Install required packages
-sudo apt-get -y install git python3 python3-venv python3-pip nginx tor whiptail libnginx-mod-http-geoip geoip-database unattended-upgrades gunicorn libssl-dev net-tools jq fail2ban ufw golang-go
-
-# Build mkcert
-git clone https://github.com/FiloSottile/mkcert && cd mkcert
-go build -ldflags "-X main.Version=$(git describe --tags)"
+sudo apt-get -y install git python3 python3-venv python3-pip nginx tor whiptail libnginx-mod-http-geoip geoip-database unattended-upgrades gunicorn libssl-dev net-tools jq fail2ban ufw mkcert
 
 # Create a virtual environment and install dependencies
 cd /home/hush/hushline
@@ -173,7 +169,7 @@ def main():
     epd.init()
 
     # Generate QR code for your URL or data
-    qr_code_image = generate_qr_code("https://hushline.local:5000/setup")
+    qr_code_image = generate_qr_code("http://hushline.local:5000/setup")
 
     # Clear frame memory
     epd.Clear(0xFF)
