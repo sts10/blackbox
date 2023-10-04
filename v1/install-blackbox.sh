@@ -208,8 +208,8 @@ nohup ./venv/bin/python3 qr-setup.py --host=0.0.0.0 &
 # Launch Flask app for setup
 nohup python3 blackbox-setup.py --host=0.0.0.0 &
 
-nohup ./venv/bin/python3 blackbox-setup.py --cert=/etc/nginx/hushline.local.pem --key=/etc/nginx/hushline.local-key.pem --host=0.0.0.0 &
-sudo mv hushline.local-key.pem /etc/nginx/
+nohup ./venv/bin/python3 blackbox-setup.py --cert=/etc/nginx/hushline.local.pem --key=/etc/nginx/hushline.local-key.pem--host=0.0.0.0 &
+
 sleep 5
 
 # Display the QR code from the file
