@@ -21,23 +21,6 @@ sudo apt update && sudo apt -y dist-upgrade && sudo apt -y autoremove
 # Install required packages
 sudo apt-get -y install git python3 python3-venv python3-pip nginx tor whiptail libnginx-mod-http-geoip geoip-database unattended-upgrades gunicorn libssl-dev net-tools jq fail2ban ufw
 
-# Install mkcert and its dependencies
-echo "Installing mkcert and its dependencies..."
-sudo apt install -y libnss3-tools
-wget https://github.com/FiloSottile/mkcert/releases/download/v1.4.3/mkcert-v1.4.3-linux-amd64
-sudo mv mkcert-v1.4.3-linux-amd64 /usr/local/bin/mkcert
-sudo chmod +x /usr/local/bin/mkcert
-mkcert -install
-
-# Create a certificate for hushline.local
-echo "Creating certificate for hushline.local..."
-mkcert hushline.local
-
-# Move and link the certificates to Nginx's directory (optional, modify as needed)
-sudo mv hushline.local.pem /etc/nginx/
-sudo mv hushline.local-key.pem /etc/nginx/
-echo "Certificate and key for hushline.local have been created and moved to /etc/nginx/."
-
 # Create a virtual environment and install dependencies
 cd /home/hush/hushline
 git restore --source=HEAD --staged --worktree -- .
@@ -290,6 +273,7 @@ ONION_ADDRESS=$(sudo cat /var/lib/tor/hidden_service/hostname)
 cat >/etc/nginx/sites-available/hush-line.nginx <<EOL
 server {
     listen 80;
+<<<<<<< HEAD
     server_name hushline.local;
     return 301 https://\$host\$request_uri;
 }
@@ -301,6 +285,9 @@ server {
     ssl_certificate /etc/nginx/hushline.local.pem;
     ssl_certificate_key /etc/nginx/hushline.local-key.pem;
 
+=======
+    server_name localhost;
+>>>>>>> parent of b27cbf0 (Merge pull request #3 from scidsg/mkcert)
     location / {
         proxy_pass http://127.0.0.1:5000;
         proxy_set_header Host \$host;
@@ -311,15 +298,15 @@ server {
         proxy_send_timeout 300s;
         proxy_read_timeout 300s;
     }
-
-    add_header Strict-Transport-Security "max-age=63072000; includeSubdomains";
-    add_header X-Frame-Options DENY;
-    add_header Onion-Location http://$ONION_ADDRESS\$request_uri;
-    add_header X-Content-Type-Options nosniff;
-    add_header Content-Security-Policy "default-src 'self'; frame-ancestors 'none'";
-    add_header Permissions-Policy "geolocation=(), midi=(), notifications=(), push=(), sync-xhr=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), speaker=(), vibrate=(), fullscreen=(), payment=(), interest-cohort=()";
-    add_header Referrer-Policy "no-referrer";
-    add_header X-XSS-Protection "1; mode=block";
+    
+        add_header Strict-Transport-Security "max-age=63072000; includeSubdomains";
+        add_header X-Frame-Options DENY;
+        add_header Onion-Location http://$ONION_ADDRESS\$request_uri;
+        add_header X-Content-Type-Options nosniff;
+        add_header Content-Security-Policy "default-src 'self'; frame-ancestors 'none'";
+        add_header Permissions-Policy "geolocation=(), midi=(), notifications=(), push=(), sync-xhr=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), speaker=(), vibrate=(), fullscreen=(), payment=(), interest-cohort=()";
+        add_header Referrer-Policy "no-referrer";
+        add_header X-XSS-Protection "1; mode=block";
 }
 EOL
 
