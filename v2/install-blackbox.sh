@@ -81,7 +81,7 @@ def setup():
         smtp_server = request.form.get('smtp_server')
         password = request.form.get('password')
         smtp_port = request.form.get('smtp_port')
-        pgp_key_address = request.form.get('pgp_key_address')
+        pgp_public_key = request.form.get('pgp_public_key')
 
         # Save the configuration
         with open('/tmp/setup_config.json', 'w') as f:
@@ -90,10 +90,14 @@ def setup():
                 'smtp_server': smtp_server,
                 'password': password,
                 'smtp_port': smtp_port,
-                'pgp_key_address': pgp_key_address
+                'pgp_public_key': pgp_public_key
             }, f)
 
         setup_complete = True
+
+        # Save the provided PGP key to a file
+        with open('/home/hush/hushline/public_key.asc', 'w') as keyfile:
+            keyfile.write(pgp_public_key)
 
         return redirect(url_for('index'))
 
@@ -114,7 +118,7 @@ if __name__ == '__main__':
 EOL
 
 # Create a new script to display status on the e-ink display
-cat >/home/hush/hushline/display-setup-qr-beta.py <<EOL
+cat >/home/hush/hushline/qr-setup.py <<EOL
 import os
 import sys
 import time
@@ -182,7 +186,7 @@ if __name__ == "__main__":
     main()
 EOL
 
-nohup ./venv/bin/python3 display-setup-qr-beta.py --host=0.0.0.0 &
+nohup ./venv/bin/python3 qr-setup.py --host=0.0.0.0 &
 
 # Launch Flask app for setup
 nohup python3 blackbox-setup.py --host=0.0.0.0 &
@@ -209,8 +213,8 @@ PGP_KEY_ADDRESS=$(jq -r '.pgp_key_address' /tmp/setup_config.json)
 # Kill the Flask setup process
 pkill -f blackbox-setup.py
 
-# Download the public PGP key and rename to public_key.asc
-wget $PGP_KEY_ADDRESS -O $PWD/public_key.asc
+# Make config read-only
+chmod 444 /tmp/setup_config.json
 
 # Create a systemd service
 cat >/etc/systemd/system/hush-line.service <<EOL
@@ -230,9 +234,6 @@ Restart=always
 [Install]
 WantedBy=multi-user.target
 EOL
-
-# Make config read-only
-chmod 444 /etc/systemd/system/hush-line.service
 
 sudo systemctl daemon-reload
 sudo systemctl enable hush-line.service
