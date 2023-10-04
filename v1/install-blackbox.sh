@@ -38,14 +38,6 @@ sudo mv hushline.local.pem /etc/nginx/
 sudo mv hushline.local-key.pem /etc/nginx/
 echo "Certificate and key for hushline.local have been created and moved to /etc/nginx/."
 
-# Create a certificate for hushline.local
-echo "Creating certificate for hushline.local..."
-mkcert setup.hushline.local
-
-# Move and link the certificates to Nginx's directory (optional, modify as needed)
-sudo mv setup.hushline.local.pem /etc/nginx/
-sudo mv setup.hushline.local-key.pem /etc/nginx/
-
 # Create a virtual environment and install dependencies
 cd /home/hush/hushline
 git restore --source=HEAD --staged --worktree -- .
@@ -143,38 +135,10 @@ def index():
     return '👍 Successfully submitted! The installation script will now resume.'
 
 if __name__ == '__main__':
-    qr = segno.make(f'https://hushline.local:5000/setup')
+    qr = segno.make(f'http://hushline.local:5000/setup')
     with open("/tmp/qr_code.txt", "w") as f:
         qr.terminal(out=f)
-    app.run(host='hushline.local/setup', port=5000)
-EOL
-
-# Configure Nginx
-cat >/etc/nginx/sites-available/hushline-setup.nginx <<EOL
-server {
-    listen 80;
-    server_name setup.hushline.local;
-    return 301 https://\$host\$request_uri;
-}
-
-server {
-    listen 443 ssl;
-    server_name setup.hushline.local;
-
-    ssl_certificate /etc/nginx/setup.hushline.local.pem;
-    ssl_certificate_key /etc/nginx/setup.hushline.local-key.pem;
-
-    location / {
-        proxy_pass http://127.0.0.1:5000;
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-        proxy_connect_timeout 300s;
-        proxy_send_timeout 300s;
-        proxy_read_timeout 300s;
-    }
-}
+    app.run(host='hushline.local', port=5000)
 EOL
 
 if [ -e "/etc/nginx/sites-enabled/default" ]; then
@@ -255,7 +219,7 @@ EOL
 nohup ./venv/bin/python3 qr-setup.py --host=0.0.0.0 &
 
 # Launch Flask app for setup
-nohup ./venv/bin/python3 blackbox-setup.py --host=hushline.local --port=5000 &
+nohup python3 blackbox-setup.py --host=0.0.0.0 &
 
 sleep 5
 
