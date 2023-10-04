@@ -21,6 +21,23 @@ sudo apt update && sudo apt -y dist-upgrade && sudo apt -y autoremove
 # Install required packages
 sudo apt-get -y install git python3 python3-venv python3-pip nginx tor whiptail libnginx-mod-http-geoip geoip-database unattended-upgrades gunicorn libssl-dev net-tools jq fail2ban ufw
 
+# Install mkcert and its dependencies
+echo "Installing mkcert and its dependencies..."
+sudo apt install -y libnss3-tools
+wget https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-arm64
+chmod +x mkcert-v1.4.4-linux-arm64
+sudo mv mkcert-v1.4.4-linux-arm64 /usr/local/bin/mkcert
+mkcert -install
+
+# Create a certificate for hushline.local
+echo "Creating certificate for hushline.local..."
+mkcert hushline.local
+
+# Move and link the certificates to Nginx's directory (optional, modify as needed)
+sudo mv hushline.local.pem /etc/nginx/
+sudo mv hushline.local-key.pem /etc/nginx/
+echo "Certificate and key for hushline.local have been created and moved to /etc/nginx/."
+
 # Create a virtual environment and install dependencies
 cd /home/hush/hushline
 git restore --source=HEAD --staged --worktree -- .
@@ -66,6 +83,13 @@ import requests
 import socket
 
 app = Flask(__name__)
+
+@app.before_request
+def redirect_to_https():
+    if not request.is_secure and 'localhost' not in request.url:
+        url = request.url.replace('http://', 'https://', 1)
+        code = 301
+        return redirect(url, code=code)
 
 # Flag to indicate whether setup is complete
 setup_complete = os.path.exists('/tmp/setup_config.json')
@@ -116,6 +140,12 @@ if __name__ == '__main__':
         qr.terminal(out=f)
     app.run(host='hushline.local', port=5000)
 EOL
+
+if [ -e "/etc/nginx/sites-enabled/default" ]; then
+    rm /etc/nginx/sites-enabled/default
+fi
+ln -sf /etc/nginx/sites-available/hushline-setup.nginx /etc/nginx/sites-enabled/
+nginx -t && systemctl restart nginx || error_exit
 
 # Create a new script to display status on the e-ink display
 cat >/home/hush/hushline/qr-setup.py <<EOL
@@ -169,7 +199,7 @@ def main():
     epd.init()
 
     # Generate QR code for your URL or data
-    qr_code_image = generate_qr_code("http://hushline.local:5000/setup")
+    qr_code_image = generate_qr_code("https://hushline.local:5000/setup")
 
     # Clear frame memory
     epd.Clear(0xFF)
@@ -196,7 +226,7 @@ sleep 5
 # Display the QR code from the file
 cat /tmp/qr_code.txt
 
-echo "The Flask app for setup is running. Please complete the setup by navigating to http://hushline.local:5000/setup."
+echo "The Flask app for setup is running. Please complete the setup by navigating to https://hushline.local/setup."
 
 # Wait for user to complete setup form
 while [ ! -f "/tmp/setup_config.json" ]; do
@@ -231,9 +261,6 @@ Restart=always
 WantedBy=multi-user.target
 EOL
 
-# Make config read-only
-chmod 444 /etc/systemd/system/hush-line.service
-
 sudo systemctl daemon-reload
 sudo systemctl enable hush-line.service
 sudo systemctl start hush-line.service
@@ -263,7 +290,17 @@ ONION_ADDRESS=$(sudo cat /var/lib/tor/hidden_service/hostname)
 cat >/etc/nginx/sites-available/hush-line.nginx <<EOL
 server {
     listen 80;
-    server_name localhost;
+    server_name hushline.local;
+    return 301 https://\$host\$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name hushline.local;
+
+    ssl_certificate /etc/nginx/hushline.local.pem;
+    ssl_certificate_key /etc/nginx/hushline.local-key.pem;
+
     location / {
         proxy_pass http://127.0.0.1:5000;
         proxy_set_header Host \$host;
@@ -274,15 +311,15 @@ server {
         proxy_send_timeout 300s;
         proxy_read_timeout 300s;
     }
-    
-        add_header Strict-Transport-Security "max-age=63072000; includeSubdomains";
-        add_header X-Frame-Options DENY;
-        add_header Onion-Location http://$ONION_ADDRESS\$request_uri;
-        add_header X-Content-Type-Options nosniff;
-        add_header Content-Security-Policy "default-src 'self'; frame-ancestors 'none'";
-        add_header Permissions-Policy "geolocation=(), midi=(), notifications=(), push=(), sync-xhr=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), speaker=(), vibrate=(), fullscreen=(), payment=(), interest-cohort=()";
-        add_header Referrer-Policy "no-referrer";
-        add_header X-XSS-Protection "1; mode=block";
+
+    add_header Strict-Transport-Security "max-age=63072000; includeSubdomains";
+    add_header X-Frame-Options DENY;
+    add_header Onion-Location http://$ONION_ADDRESS\$request_uri;
+    add_header X-Content-Type-Options nosniff;
+    add_header Content-Security-Policy "default-src 'self'; frame-ancestors 'none'";
+    add_header Permissions-Policy "geolocation=(), midi=(), notifications=(), push=(), sync-xhr=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), speaker=(), vibrate=(), fullscreen=(), payment=(), interest-cohort=()";
+    add_header Referrer-Policy "no-referrer";
+    add_header X-XSS-Protection "1; mode=block";
 }
 EOL
 
