@@ -67,29 +67,29 @@ Last login: Tue May  2 23:23:49 2023
 box@blackbox:~ $ 
 ```
 
-**Step 10**: Now that we can run commands on the Pi, run:
-```bash
-sudo su
-```
-and enter your password. 
+**Step 10**: 
 
-Next, if your e-ink display is `Rev2.2`, run:
+Next, if your e-ink display is `Rev2.1`, run:
 ```bash
-curl -sSL https://raw.githubusercontent.com/scidsg/blackbox/main/v2/helper.sh | bash
+curl -sSL https://raw.githubusercontent.com/scidsg/blackbox/main/v1/helper.sh | sudo bash
 ```
 
-If it's `Rev2.1`, run:
+If your e-ink display is `Rev2.2`, run:
 ```bash
-curl -sSL https://raw.githubusercontent.com/scidsg/blackbox/main/v1/helper.sh | bash
+curl -sSL https://raw.githubusercontent.com/scidsg/blackbox/main/v2/helper.sh | sudo bash
 ```
 
-**Step 11**: After some programs install, you'll be asked to enter your Pi's username. Delete the default username (`Pi`) and enter `box` instead.
+**Step 11**: After some programs install, you may be asked to enter your Pi's username. If so, delete the default username (`Pi`) and enter `box` instead.
 
-**Step 12**: Next, in the Raspberry configuration menu, arrow down to "Interface Options". In that sub-menu, choose to enable SPI interface.
+**Step 12**: Next, in the Raspberry Pi configuration menu, arrow down to "Interface Options". In that sub-menu, choose to enable SPI interface.
 
-**Step 13**: Reboot Pi by running `reboot` or unplugging your Pi and then plugging it in again.
+After enabling SPI, you'll be returned to the Raspberry Pi configuration menu. Use tab to navigate to the `<Finish>` option. Hit enter.
 
-**Step 14**: When your Pi boots up again, after a few minutes, check the e-ink screen for a QR code. This QR code leads to [http://blackbox.local:5000/setup](http://blackbox.local:5000/setup)
+Wait for some more software to install on the Pi.
+
+**Step 13**: Once all programs are installed, and you see `box@blackbox:~ $` again, reboot Pi by running `sudo reboot` or unplugging your Pi and then plugging it in again.
+
+**Step 14**: After your Pi boots up again, which may take a few minutes, check the e-ink screen for a QR code. This QR code leads to [http://blackbox.local:5000/setup](http://blackbox.local:5000/setup)
 
 **Step 15**: Over on viewing computer, open [http://blackbox.local:5000/setup](http://blackbox.local:5000/setup) in a browser (ignore any HTTPS warnings). Fill out form with your Blackbox email address information (we strongly recommend creating a new email account for Blackbox to use -- Gmail works well. See [this documentation for instructions](https://scidsg.github.io/blackbox-docs/book/prereqs/general.html#2-gmail)).
 
