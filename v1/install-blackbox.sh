@@ -2,8 +2,8 @@
 
 #Run as root
 if [[ $EUID -ne 0 ]]; then
-    echo "Script needs to run as root. Elevating permissions now."
-    exec sudo /bin/bash "$0" "$@"
+  echo "Script needs to run as root. Elevating permissions now."
+  exec sudo /bin/bash "$0" "$@"
 fi
 
 # Function to display error message and exit
@@ -211,9 +211,6 @@ NOTIFY_SMTP_PORT=$(jq -r '.smtp_port' /tmp/setup_config.json)
 
 # Kill the Flask setup process
 pkill -f blackbox-setup.py
-
-# Make config read-only
-chmod 444 /tmp/setup_config.json
 
 # Create a systemd service
 cat >/etc/systemd/system/hush-line.service <<EOL
@@ -464,7 +461,7 @@ else
 fi
 
 send_email() {
-    python3 <<END
+    python3 << END
 import smtplib
 import os
 from email.mime.multipart import MIMEMultipart

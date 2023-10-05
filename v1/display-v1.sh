@@ -2,8 +2,8 @@
 
 #Run as root
 if [[ $EUID -ne 0 ]]; then
-    echo "Script needs to run as root. Elevating permissions now."
-    exec sudo /bin/bash "$0" "$@"
+  echo "Script needs to run as root. Elevating permissions now."
+  exec sudo /bin/bash "$0" "$@"
 fi
 
 # Install required packages for e-ink display
