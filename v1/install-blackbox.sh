@@ -38,15 +38,6 @@ sudo mv hushline.local.pem /etc/nginx/
 sudo mv hushline.local-key.pem /etc/nginx/
 echo "Certificate and key for hushline.local have been created and moved to /etc/nginx/."
 
-# Create a certificate for hushline.local
-echo "Creating certificate for hushline.local..."
-mkcert setup.hushline.local
-
-# Move and link the certificates to Nginx's directory (optional, modify as needed)
-sudo mv setup.hushline.local.pem /etc/nginx/
-sudo mv setup.hushline.local-key.pem /etc/nginx/
-echo "Certificate and key for hushline.local have been created and moved to /etc/nginx/."
-
 # Create a virtual environment and install dependencies
 cd /home/hush/hushline
 git restore --source=HEAD --staged --worktree -- .
@@ -155,8 +146,8 @@ server {
     listen 443 ssl;
     server_name hushline.local;
 
-    ssl_certificate /etc/nginx/setup.hushline.local.pem;
-    ssl_certificate_key /etc/nginx/setup.hushline.local-key.pem;
+    ssl_certificate /etc/nginx/hushline.local.pem;
+    ssl_certificate_key /etc/nginx/hushline.local-key.pem;
 
     location / {
         proxy_pass http://127.0.0.1:5001;
@@ -562,7 +553,7 @@ warnings.filterwarnings("ignore", category=CryptographyDeprecationWarning)
 
 def send_notification_email(smtp_server, smtp_port, email, password):
     subject = "🎉 Blackbox Installation Complete"
-    message = "Blackbox has been successfully installed!\n\nYour Hush Line address is:\nhttp://$ONION_ADDRESS\n\nTo send a message, enter your address into Tor Browser. If you still need to download it, get it from https://torproject.org/download.\n\nHush Line is a free and open-source tool by Science & Design, Inc. Learn more about us at https://scidsg.org.\n\nIf you've found this resource useful, please consider making a donation at https://opencollective.com/scidsg."
+    message = "Blackbox has been successfully installed! In a moment, your device will reboot. When you see "Blackbox is running" you'll be able to visit your tip line. If you can't immediately connect, don't panic, this is normal. Sometimes it takes a few minutes for your device to publish its information.\n\nYour Hush Line address is:\nhttp://$ONION_ADDRESS\n\nTo send a message, enter your address into Tor Browser. If you still need to download it, get it from https://torproject.org/download.\n\nHush Line is a free and open-source tool by Science & Design, Inc. Learn more about us at https://scidsg.org.\n\nIf you've found this resource useful, please consider making a donation at https://opencollective.com/scidsg."
 
     # Load the public key from its path
     key_path = os.path.expanduser('$HUSHLINE_PATH/public_key.asc')  # Use os to expand the path
