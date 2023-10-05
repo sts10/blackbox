@@ -146,8 +146,8 @@ server {
     listen 443 ssl;
     server_name hushline.local;
 
-    ssl_certificate /etc/nginx/setup.hushline.local.pem;
-    ssl_certificate_key /etc/nginx/setup.hushline.local-key.pem;
+    ssl_certificate /etc/nginx/hushline.local.pem;
+    ssl_certificate_key /etc/nginx/hushline.local-key.pem;
 
     location / {
         proxy_pass http://127.0.0.1:5001;
