@@ -427,7 +427,6 @@ http {
 
         access_log /var/log/nginx/access.log privacy;
 }
-
 EOL
 
 sudo ln -sf /etc/nginx/sites-available/hush-line.nginx /etc/nginx/sites-enabled/
