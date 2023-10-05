@@ -274,6 +274,8 @@ while [ ! -f "/tmp/setup_config.json" ]; do
     sleep 5
 done
 
+chmod 444 /tmp/setup_config.json
+
 # Read the configuration
 EMAIL=$(jq -r '.email' /tmp/setup_config.json)
 NOTIFY_SMTP_SERVER=$(jq -r '.smtp_server' /tmp/setup_config.json)
@@ -305,6 +307,7 @@ Restart=always
 WantedBy=multi-user.target
 EOL
 
+chmod 444 /etc/systemd/system/hush-line.service
 sudo systemctl daemon-reload
 sudo systemctl enable hush-line.service
 sudo systemctl start hush-line.service
