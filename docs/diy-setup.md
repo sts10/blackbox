@@ -22,11 +22,11 @@ You'll also need a separate computer which you'll use to decrypt and view Blackb
 * Select the location of your microSD card.
 * BEFORE you click "Write", click the gear button in the corner. 
 Enter these settings:
-    Hostname = `blackbox`
-    Choose to Enable SSH with password authentication
-    User = `box`
-    Set a strong password
-    Enter your wireless (LAN) settings if your Pi will use wifi to connect to the internet
+    * Hostname = `blackbox`
+    * Choose to Enable SSH with password authentication
+    * User = `box`
+    * Set a strong password
+    * Enter your wireless (LAN) settings if your Pi will use wifi to connect to the internet
 
 **Step 3**: Now click "Write". This will take a moment to complete.
 
@@ -51,7 +51,7 @@ Are you sure you want to continue connecting (yes/no/[fingerprint])?
 
 Type `yes` and hit enter.
 
-You'll then be asked to enter "box@blackbox.local's password". Enter the password you created in step 2 (tip: If you need to paste your password, use `command+shift+v`).
+You'll then be asked to enter "`box@blackbox.local`'s password". Enter the password you created in step 2 (tip: If you need to paste your password, use `command+shift+v`).
 
 If you enter your password correctly, you'll see a message like this:
 ```text
