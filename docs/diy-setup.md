@@ -27,6 +27,7 @@ Enter these settings:
     * User = `box`
     * Set a strong password
     * Enter your wireless (LAN) settings if your Pi will use wifi to connect to the internet
+    * Set your local timezone
 
 **Step 3**: Now click "Write". This will take a moment to complete.
 
@@ -38,10 +39,12 @@ Enter these settings:
 
 **Step 7**: Wait 5 minutes. 
 
-**Step 8**: Back on viewing computer, run `ssh box@blackbox.local`. If you get an error that `ssh: Could not resolve hostname blackbox.local: Name or service not known`, that likely just means that your Pi is still booting up and connecting to your wifi network. Wait a few minutes, and then try again.
+**Step 8**: Back on viewing computer, run `ssh box@blackbox.local`. 
+
+(If you get an error that `ssh: Could not resolve hostname blackbox.local: Name or service not known`, that likely just means that your Pi is still booting up and connecting to your wifi network. Wait a few minutes, and then try again.)
 
 **Step 9**: If it was successful, you'll see something like:
-```bash
+```
 $ ssh box@blackbox.local
 The authenticity of host 'blackbox.local (192.168.X.XX)' can't be established.
 ED25519 key fingerprint is SHA256: <fingerprint>
@@ -79,13 +82,13 @@ If your e-ink display is `Rev2.2`, run:
 curl -sSL https://raw.githubusercontent.com/scidsg/blackbox/main/v2/helper.sh | sudo bash
 ```
 
-**Step 11**: After some programs install, you may be asked to enter your Pi's username. If so, delete the default username (`Pi`) and enter `box` instead.
+<!-- **Step 10b**: After some programs install, you may be asked to enter your Pi's username. If so, delete the default username (`Pi`) and enter `box` instead. -->
 
 **Step 12**: Next, in the Raspberry Pi configuration menu, arrow down to "Interface Options". In that sub-menu, choose to enable SPI interface.
 
 After enabling SPI, you'll be returned to the Raspberry Pi configuration menu. Use tab to navigate to the `<Finish>` option. Hit enter.
 
-Wait for some more software to install on the Pi.
+Wait a few minutes for some more software to be installed on the Pi.
 
 **Step 13**: Once all programs are installed, and you see `box@blackbox:~ $` again, reboot Pi by running `sudo reboot` or unplugging your Pi and then plugging it in again.
 
