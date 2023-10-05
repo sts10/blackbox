@@ -530,14 +530,8 @@ echo "y" | ufw enable
 
 echo "UFW configuration complete."
 
-HUSHLINE_PATH=""
-
-# Detect the environment (Raspberry Pi or VPS) based on some characteristic
-if [[ $(uname -n) == *"hushline"* ]]; then
-    HUSHLINE_PATH="$HOME/hushline"
-else
-    HUSHLINE_PATH="/root/hushline" # Adjusted to /root/hushline for the root user on VPS
-fi
+# Assume Raspberry Pi, since this is Blackbox
+HUSHLINE_PATH="$HOME/hushline"
 
 send_email() {
     python3 << END
