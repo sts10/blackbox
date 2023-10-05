@@ -38,6 +38,15 @@ sudo mv hushline.local.pem /etc/nginx/
 sudo mv hushline.local-key.pem /etc/nginx/
 echo "Certificate and key for hushline.local have been created and moved to /etc/nginx/."
 
+# Create a certificate for hushline.local
+echo "Creating certificate for hushline.local..."
+mkcert setup.hushline.local
+
+# Move and link the certificates to Nginx's directory (optional, modify as needed)
+sudo mv setup.hushline.local.pem /etc/nginx/
+sudo mv setup.hushline.local-key.pem /etc/nginx/
+echo "Certificate and key for hushline.local have been created and moved to /etc/nginx/."
+
 # Create a virtual environment and install dependencies
 cd /home/hush/hushline
 git restore --source=HEAD --staged --worktree -- .
@@ -128,11 +137,56 @@ def index():
     return '👍 Successfully submitted! The installation script will now resume.'
 
 if __name__ == '__main__':
-    qr = segno.make(f'http://hushline.local:5000/setup')
+    qr = segno.make(f'https://hushline.local/setup')
     with open("/tmp/qr_code.txt", "w") as f:
         qr.terminal(out=f)
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5001)
 EOL
+
+# Configure Nginx
+cat >/etc/nginx/sites-available/hushline-setup.nginx <<EOL
+server {
+    listen 80;
+    server_name hushline.local;
+    return 301 https://\$host\$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name hushline.local;
+
+    ssl_certificate /etc/nginx/setup.hushline.local.pem;
+    ssl_certificate_key /etc/nginx/setup.hushline.local-key.pem;
+
+    location / {
+        proxy_pass http://127.0.0.1:5001;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_connect_timeout 300s;
+        proxy_send_timeout 300s;
+        proxy_read_timeout 300s;
+    }
+
+    add_header Strict-Transport-Security "max-age=63072000; includeSubdomains";
+    add_header X-Frame-Options DENY;
+    add_header X-Content-Type-Options nosniff;
+    add_header Content-Security-Policy "default-src 'self'; frame-ancestors 'none'";
+    add_header Permissions-Policy "geolocation=(), midi=(), notifications=(), push=(), sync-xhr=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), speaker=(), vibrate=(), fullscreen=(), payment=(), interest-cohort=()";
+    add_header Referrer-Policy "no-referrer";
+    add_header X-XSS-Protection "1; mode=block";
+}
+EOL
+
+sudo ln -sf /etc/nginx/sites-available/hushline-setup.nginx /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl restart nginx
+
+if [ -e "/etc/nginx/sites-enabled/default" ]; then
+    rm /etc/nginx/sites-enabled/default
+fi
+ln -sf /etc/nginx/sites-available/hushline-setup.nginx /etc/nginx/sites-enabled/
+nginx -t && systemctl restart nginx || error_exit
 
 # Create a new script to display status on the e-ink display
 cat >/home/hush/hushline/qr-setup.py <<EOL
@@ -186,7 +240,7 @@ def main():
     epd.init()
 
     # Generate QR code for your URL or data
-    qr_code_image = generate_qr_code("http://hushline.local:5000/setup")
+    qr_code_image = generate_qr_code("https://hushline.local/setup")
 
     # Clear frame memory
     epd.Clear(0xFF)
@@ -213,7 +267,7 @@ sleep 5
 # Display the QR code from the file
 cat /tmp/qr_code.txt
 
-echo "The Flask app for setup is running. Please complete the setup by navigating to http://hushline.local:5000/setup."
+echo "The Flask app for setup is running. Please complete the setup by navigating to https://hushline.local/setup."
 
 # Wait for user to complete setup form
 while [ ! -f "/tmp/setup_config.json" ]; do
@@ -226,8 +280,11 @@ NOTIFY_SMTP_SERVER=$(jq -r '.smtp_server' /tmp/setup_config.json)
 NOTIFY_PASSWORD=$(jq -r '.password' /tmp/setup_config.json)
 NOTIFY_SMTP_PORT=$(jq -r '.smtp_port' /tmp/setup_config.json)
 
-# Kill the Flask setup process
+# Kill the Flask setup process and delete the install script
 pkill -f blackbox-setup.py
+rm /home/hush/hushline/blackbox-setup.py
+rm /etc/nginx/sites-available/hushline-setup.nginx
+rm /etc/nginx/sites-enabled/hushline-setup.nginx
 
 # Create a systemd service
 cat >/etc/systemd/system/hush-line.service <<EOL
@@ -248,6 +305,11 @@ Restart=always
 WantedBy=multi-user.target
 EOL
 
+# Make service file read-only and remove temp file
+chmod 444 /etc/systemd/system/hush-line.service
+rm /tmp/setup_config.json
+
+# Enanle Hush Line service
 sudo systemctl daemon-reload
 sudo systemctl enable hush-line.service
 sudo systemctl start hush-line.service
