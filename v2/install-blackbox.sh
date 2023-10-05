@@ -258,7 +258,7 @@ sleep 5
 # Display the QR code from the file
 cat /tmp/qr_code.txt
 
-echo "The Flask app for setup is running. Please complete the setup by navigating to http://hushline.local:5000/setup."
+echo "The Flask app for setup is running. Please complete the setup by navigating to https://hushline.local/setup."
 
 # Wait for user to complete setup form
 while [ ! -f "/tmp/setup_config.json" ]; do
