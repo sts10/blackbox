@@ -27,6 +27,7 @@ Enter these settings:
     * User = `box`
     * Set a strong password
     * Enter your wireless (LAN) settings if your Pi will use wifi to connect to the internet
+    * Set your local timezone
 
 **Step 3**: Now click "Write". This will take a moment to complete.
 
@@ -36,12 +37,14 @@ Enter these settings:
 
 **Step 6**: Plug MicroSD card in to your Pi. With the power cable NOT plugged in, plug in e-ink screen. Now plug the power cable into the outlet. Your Pi should boot up.
 
-**Step 7**: Wait 5 minutes. 
+**Step 7**: Wait about 3 minutes for your Pi to boot up.
 
-**Step 8**: Back on viewing computer, run `ssh box@blackbox.local`. If you get an error that `ssh: Could not resolve hostname blackbox.local: Name or service not known`, that likely just means that your Pi is still booting up and connecting to your wifi network. Wait a few minutes, and then try again.
+**Step 8**: Back on viewing computer, run `ssh box@blackbox.local`. 
+
+(If you get an error that `ssh: Could not resolve hostname blackbox.local: Name or service not known`, that likely just means that your Pi is still booting up and connecting to your wifi network. Wait a few minutes, and then try again.)
 
 **Step 9**: If it was successful, you'll see something like:
-```bash
+```
 $ ssh box@blackbox.local
 The authenticity of host 'blackbox.local (192.168.X.XX)' can't be established.
 ED25519 key fingerprint is SHA256: <fingerprint>
@@ -79,25 +82,25 @@ If your e-ink display is `Rev2.2`, run:
 curl -sSL https://raw.githubusercontent.com/scidsg/blackbox/main/v2/helper.sh | sudo bash
 ```
 
-**Step 11**: After some programs install, you may be asked to enter your Pi's username. If so, delete the default username (`Pi`) and enter `box` instead.
+<!-- **Step 10b**: After some programs install, you may be asked to enter your Pi's username. If so, delete the default username (`Pi`) and enter `box` instead. -->
 
-**Step 12**: Next, in the Raspberry Pi configuration menu, arrow down to "Interface Options". In that sub-menu, choose to enable SPI interface.
+**Step 11**: Next, in the Raspberry Pi configuration menu, arrow down to "Interface Options". In that sub-menu, choose to enable SPI interface.
 
 After enabling SPI, you'll be returned to the Raspberry Pi configuration menu. Use tab to navigate to the `<Finish>` option. Hit enter.
 
-Wait for some more software to install on the Pi.
+Wait a few minutes for some more software to be installed on the Pi.
 
-**Step 13**: Once all programs are installed, and you see `box@blackbox:~ $` again, reboot Pi by running `sudo reboot` or unplugging your Pi and then plugging it in again.
+**Step 12**: Once all programs are installed, and you see `box@blackbox:~ $` again, reboot Pi by running `sudo reboot` or unplugging your Pi and then plugging it in again.
 
-**Step 14**: After your Pi boots up again, which may take a few minutes, check the e-ink screen for a QR code. This QR code leads to [http://blackbox.local:5000/setup](http://blackbox.local:5000/setup)
+**Step 13**: After your Pi boots up again, which may take a few minutes, check the e-ink screen for a QR code. This QR code leads to [http://blackbox.local:5000/setup](http://blackbox.local:5000/setup)
 
-**Step 15**: Over on viewing computer, open [http://blackbox.local:5000/setup](http://blackbox.local:5000/setup) in a browser (ignore any HTTPS warnings). Fill out form with your Blackbox email address information (we strongly recommend creating a new email account for Blackbox to use -- Gmail works well. See [this documentation for instructions](https://scidsg.github.io/blackbox-docs/book/prereqs/general.html#2-gmail)).
+**Step 14**: Over on viewing computer, open [http://blackbox.local:5000/setup](http://blackbox.local:5000/setup) in a browser (ignore any HTTPS warnings). Fill out form with your Blackbox email address information (we strongly recommend creating a new email account for Blackbox to use -- Gmail works well. See [this documentation for instructions](https://scidsg.github.io/blackbox-docs/book/prereqs/general.html#2-gmail)).
 
 Note: If you're using [Mailvelope](https://mailvelope.com/en/) to generate a new PGP key-pair, you'll need to export (save) your public key as a file, and then manually upload this public key file to [keys.openpgp.org.](https://keys.openpgp.org/) Do NOT upload your private PGP key!
 
-**Step 16**: Once who've completely filled out this form, hit submit. In a few minutes, you should receive a confirmation email, which, among other things, contains your Blackbox URL. 
+**Step 15**: Once who've completely filled out this form, hit submit. In a few minutes, you should receive a confirmation email, which, among other things, contains your Blackbox URL. 
 
-**Step 17**: Share your new Blackbox URL with your community, along with instructions on how to [download and install the Tor Browser](https://www.torproject.org/download/). 
+**Step 16**: Share your new Blackbox URL with your community, along with instructions on how to [download and install the Tor Browser](https://www.torproject.org/download/). 
 
 If your community faces [a higher threat](https://scidsg.github.io/hushline-docs/book/prereqs/threat-modeling.html), recommend to them that they better protect their anonymity by only visiting your Blackbox URL on personal devices while using a public WiFi network. [Read more about threat modeling here.](https://scidsg.github.io/hushline-docs/book/prereqs/threat-modeling.html)
 
