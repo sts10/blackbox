@@ -51,7 +51,7 @@ Are you sure you want to continue connecting (yes/no/[fingerprint])?
 
 Type `yes` and hit enter.
 
-You'll then be asked to enter "box@blackbox.local's password". Enter the password you created in step 2 (tip: If you need to paste your password, use `command+shift+v`).
+You'll then be asked to enter "`box@blackbox.local`'s password". Enter the password you created in step 2 (tip: If you need to paste your password, use `command+shift+v`).
 
 If you enter your password correctly, you'll see a message like this:
 ```text
