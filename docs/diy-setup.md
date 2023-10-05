@@ -92,9 +92,9 @@ Wait a few minutes for some more software to be installed on the Pi.
 
 **Step 12**: Once all programs are installed, and you see `box@blackbox:~ $` again, reboot Pi by running `sudo reboot` or unplugging your Pi and then plugging it in again.
 
-**Step 13**: After your Pi boots up again, which may take a few minutes, check the e-ink screen for a QR code. This QR code leads to [http://blackbox.local:5000/setup](http://blackbox.local:5000/setup)
+**Step 13**: After your Pi boots up again it will finish installing Blackbox, which may take a few minutes. When it's finished, a QR code will appear on the e-ink screen. This QR code leads to [https://blackbox.local/setup](https://blackbox.local/setup), where you'll configure your Blackbox.
 
-**Step 14**: Over on viewing computer, open [http://blackbox.local:5000/setup](http://blackbox.local:5000/setup) in a browser (ignore any HTTPS warnings). Fill out form with your Blackbox email address information (we strongly recommend creating a new email account for Blackbox to use -- Gmail works well. See [this documentation for instructions](https://scidsg.github.io/blackbox-docs/book/prereqs/general.html#2-gmail)).
+**Step 14**: Over on viewing computer, open [https://blackbox.local/setup](https://blackbox.local/setup) in a browser (ignore security warnings by clicking "Advanced" -> "Accept the Risk and continue"). Fill out form with your Blackbox email address information (we strongly recommend creating a new email account for Blackbox to use -- Gmail works well. See [this documentation for instructions](https://scidsg.github.io/blackbox-docs/book/prereqs/general.html#2-gmail)).
 
 Note: If you're using [Mailvelope](https://mailvelope.com/en/) to generate a new PGP key-pair, you'll need to export (save) your public key as a file, and then manually upload this public key file to [keys.openpgp.org.](https://keys.openpgp.org/) Do NOT upload your private PGP key!
 
@@ -104,7 +104,15 @@ Note: If you're using [Mailvelope](https://mailvelope.com/en/) to generate a new
 
 If your community faces [a higher threat](https://scidsg.github.io/hushline-docs/book/prereqs/threat-modeling.html), recommend to them that they better protect their anonymity by only visiting your Blackbox URL on personal devices while using a public WiFi network. [Read more about threat modeling here.](https://scidsg.github.io/hushline-docs/book/prereqs/threat-modeling.html)
 
+<!-- ## How to check the status of your Blackbox from the command line -->
+
+<!-- ``` -->
+<!-- systemctl status blackbox-installer.service -->
+<!-- ``` -->
+
 ## Reference
 [https://scidsg.github.io/hushline-docs/book/prereqs/raspberrypi.html](https://scidsg.github.io/hushline-docs/book/prereqs/raspberrypi.html)
 
 [https://www.raspberrypi.com/documentation/computers/remote-access.html](https://www.raspberrypi.com/documentation/computers/remote-access.html)
+
+
