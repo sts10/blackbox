@@ -69,7 +69,7 @@ box@blackbox:~ $
 
 **Step 10**: 
 
-Next, if your e-ink dispaly is `Rev2.1`, run:
+Next, if your e-ink display is `Rev2.1`, run:
 ```bash
 curl -sSL https://raw.githubusercontent.com/scidsg/blackbox/main/v1/helper.sh | sudo bash
 ```
