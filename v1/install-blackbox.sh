@@ -114,7 +114,7 @@ if __name__ == '__main__':
     qr = segno.make(f'http://hushline.local:5000/setup')
     with open("/tmp/qr_code.txt", "w") as f:
         qr.terminal(out=f)
-    app.run(host='hushline.local', port=5000)
+    app.run(host='0.0.0.0', port=5000)
 EOL
 
 # Create a new script to display status on the e-ink display
@@ -189,7 +189,7 @@ EOL
 nohup ./venv/bin/python3 qr-setup.py --host=0.0.0.0 &
 
 # Launch Flask app for setup
-nohup python3 blackbox-setup.py --host=0.0.0.0 &
+nohup ./venv/bin/python3 blackbox-setup.py --host=0.0.0.0 &
 
 sleep 5
 
