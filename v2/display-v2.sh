@@ -12,7 +12,7 @@ apt-get -y dist-upgrade
 apt-get install -y python3-pip
 
 # Install Waveshare e-Paper library
-pip3 install /home/hush/hushline/e-Paper/RaspberryPi_JetsonNano/python/
+pip3 install $HOME/hushline/e-Paper/RaspberryPi_JetsonNano/python/
 pip3 install qrcode[pil]
 pip3 install requests python-gnupg
 
@@ -29,7 +29,7 @@ else
 fi
 
 # Create a new script to display status on the e-ink display
-cat >/home/hush/hushline/display_status.py <<EOL
+cat >$HOME/hushline/display_status.py <<EOL
 import os
 import sys
 import time
@@ -195,10 +195,10 @@ def main():
     print("EPD initialized")
 
     # Display splash screen
-    splash_image_path = "/home/hush/hushline/splash.png"
+    splash_image_path = "$HOME/hushline/splash.png"
     display_splash_screen(epd, splash_image_path, 3)
 
-    pgp_owner_info_url = "/home/hush/hushline/public_key.asc"
+    pgp_owner_info_url = "$HOME/hushline/public_key.asc"
 
     try:
         while True:
@@ -228,7 +228,7 @@ if __name__ == '__main__':
 EOL
 
 # Create a new script to display status on the e-ink display
-cat >/home/hush/hushline/clear_display.py <<EOL
+cat >$HOME/hushline/clear_display.py <<EOL
 import sys
 from waveshare_epd import epd2in7_V2
 from PIL import Image
@@ -263,7 +263,7 @@ Before=shutdown.target reboot.target halt.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/python3 /home/hush/hushline/clear_display.py
+ExecStart=/usr/bin/python3 $HOME/hushline/clear_display.py
 TimeoutStartSec=0
 
 [Install]
@@ -280,7 +280,7 @@ After=network.target
 
 [Service]
 User=root
-ExecStart=/usr/bin/python3 /home/hush/hushline/display_status.py
+ExecStart=/usr/bin/python3 $HOME/hushline/display_status.py
 Restart=always
 
 [Install]
@@ -293,7 +293,7 @@ sudo systemctl enable display-status.service
 sudo systemctl start display-status.service
 
 # Download splash screen image
-cd /home/hush/hushline
+cd $HOME/hushline
 wget https://raw.githubusercontent.com/scidsg/hushline-assets/main/images/splash.png
 
 echo "✅ E-ink display configuration complete. Rebooting your Raspberry Pi..."

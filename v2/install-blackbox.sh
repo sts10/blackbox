@@ -40,7 +40,7 @@ sudo mv hushline.local-key.pem /etc/nginx/
 echo "Certificate and key for hushline.local have been created and moved to /etc/nginx/."
 
 # Create a virtual environment and install dependencies
-cd /home/hush/hushline
+cd $HOME/hushline
 git restore --source=HEAD --staged --worktree -- .
 git reset HEAD -- .
 git clean -fd .
@@ -75,7 +75,7 @@ else
 fi
 
 # Create a new script to capture information
-cat >/home/hush/hushline/blackbox-setup.py <<EOL
+cat >$HOME/hushline/blackbox-setup.py <<EOL
 from flask import Flask, request, render_template, redirect, url_for
 import json
 import os
@@ -114,7 +114,7 @@ def setup():
         setup_complete = True
 
         # Save the provided PGP key to a file
-        with open('/home/hush/hushline/public_key.asc', 'w') as keyfile:
+        with open('$HOME/hushline/public_key.asc', 'w') as keyfile:
             keyfile.write(pgp_public_key)
 
         return redirect(url_for('index'))
@@ -181,7 +181,7 @@ ln -sf /etc/nginx/sites-available/hushline-setup.nginx /etc/nginx/sites-enabled/
 nginx -t && systemctl restart nginx || error_exit
 
 # Create a new script to display status on the e-ink display
-cat >/home/hush/hushline/display-setup-qr-beta.py <<EOL
+cat >$HOME/hushline/display-setup-qr-beta.py <<EOL
 import os
 import sys
 import time
@@ -274,7 +274,7 @@ NOTIFY_SMTP_PORT=$(jq -r '.smtp_port' /tmp/setup_config.json)
 
 # Kill the Flask setup process and delete the install script
 pkill -f blackbox-setup.py
-rm /home/hush/hushline/blackbox-setup.py
+rm $HOME/hushline/blackbox-setup.py
 rm /etc/nginx/sites-available/hushline-setup.nginx
 rm /etc/nginx/sites-enabled/hushline-setup.nginx
 
@@ -534,7 +534,7 @@ HUSHLINE_PATH=""
 
 # Detect the environment (Raspberry Pi or VPS) based on some characteristic
 if [[ $(uname -n) == *"hushline"* ]]; then
-    HUSHLINE_PATH="/home/hush/hushline"
+    HUSHLINE_PATH="$HOME/hushline"
 else
     HUSHLINE_PATH="/root/hushline" # Adjusted to /root/hushline for the root user on VPS
 fi
@@ -553,7 +553,7 @@ warnings.filterwarnings("ignore", category=CryptographyDeprecationWarning)
 
 def send_notification_email(smtp_server, smtp_port, email, password):
     subject = "🎉 Blackbox Installation Complete"
-    message = "Blackbox has been successfully installed! In a moment, your device will reboot.\n\nYou can visit your tip line when you see "Blackbox is running" on your e-Paper display. If you can't immediately connect, don't panic; this is normal, as your device's information sometimes takes a few minutes to publish.\n\nYour Hush Line address is:\nhttp://$ONION_ADDRESS\n\nTo send a message, enter your address into Tor Browser. If you still need to download it, get it from https://torproject.org/download.\n\nHush Line is a free and open-source tool by Science & Design, Inc. Learn more about us at https://scidsg.org.\n\nIf you've found this resource useful, please consider making a donation at https://opencollective.com/scidsg."
+    message = "Blackbox has been successfully installed! In a moment, your device will reboot.\n\nYou can visit your tip line when you see \"Blackbox is running\" on your e-Paper display. If you can't immediately connect, don't panic; this is normal, as your device's information sometimes takes a few minutes to publish.\n\nYour Hush Line address is:\nhttp://$ONION_ADDRESS\n\nTo send a message, enter your address into Tor Browser. If you still need to download it, get it from https://torproject.org/download.\n\nHush Line is a free and open-source tool by Science & Design, Inc. Learn more about us at https://scidsg.org.\n\nIf you've found this resource useful, please consider making a donation at https://opencollective.com/scidsg."
 
     # Load the public key from its path
     key_path = os.path.expanduser('$HUSHLINE_PATH/public_key.asc')  # Use os to expand the path
