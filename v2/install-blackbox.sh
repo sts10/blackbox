@@ -16,18 +16,18 @@ error_exit() {
 trap error_exit ERR
 
 # Update and upgrade
-sudo apt update && sudo apt -y dist-upgrade && sudo apt -y autoremove
+apt update && apt -y dist-upgrade && apt -y autoremove
 
 # Install required packages
-sudo apt-get -y install git python3 python3-venv python3-pip nginx tor whiptail libnginx-mod-http-geoip geoip-database unattended-upgrades gunicorn libssl-dev net-tools jq fail2ban ufw
+apt-get -y install git python3 python3-venv python3-pip nginx tor whiptail libnginx-mod-http-geoip geoip-database unattended-upgrades gunicorn libssl-dev net-tools jq fail2ban ufw
 
 # Install mkcert and its dependencies
 echo "Installing mkcert and its dependencies..."
-sudo apt install -y libnss3-tools
+apt install -y libnss3-tools
 wget https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-arm64
 sleep 10
 chmod +x mkcert-v1.4.4-linux-arm64
-sudo mv mkcert-v1.4.4-linux-arm64 /usr/local/bin/mkcert
+mv mkcert-v1.4.4-linux-arm64 /usr/local/bin/mkcert
 mkcert -install
 
 # Create a certificate for hushline.local
@@ -35,8 +35,8 @@ echo "Creating certificate for hushline.local..."
 mkcert hushline.local
 
 # Move and link the certificates to Nginx's directory (optional, modify as needed)
-sudo mv hushline.local.pem /etc/nginx/
-sudo mv hushline.local-key.pem /etc/nginx/
+mv hushline.local.pem /etc/nginx/
+mv hushline.local-key.pem /etc/nginx/
 echo "Certificate and key for hushline.local have been created and moved to /etc/nginx/."
 
 # Create a virtual environment and install dependencies
@@ -68,108 +68,14 @@ apt-get -y autoremove
 
 # Enable SPI interface
 if ! grep -q "dtparam=spi=on" /boot/config.txt; then
-    echo "dtparam=spi=on" | sudo tee -a /boot/config.txt
+    echo "dtparam=spi=on" | tee -a /boot/config.txt
     echo "SPI interface enabled."
 else
     echo "SPI interface is already enabled."
 fi
 
-# Create a new script to capture information
-cat >$HOME/hushline/blackbox-setup.py <<EOL
-from flask import Flask, request, render_template, redirect, url_for
-import json
-import os
-import segno
-import requests
-import socket
-
-app = Flask(__name__)
-
-# Flag to indicate whether setup is complete
-setup_complete = os.path.exists('/tmp/setup_config.json')
-
-@app.route('/setup', methods=['GET', 'POST'])
-def setup():
-    global setup_complete
-    if setup_complete:
-        return redirect(url_for('index'))
-    
-    if request.method == 'POST':
-        email = request.form.get('email')
-        smtp_server = request.form.get('smtp_server')
-        password = request.form.get('password')
-        smtp_port = request.form.get('smtp_port')
-        pgp_public_key = request.form.get('pgp_public_key')
-
-        # Save the configuration
-        with open('/tmp/setup_config.json', 'w') as f:
-            json.dump({
-                'email': email,
-                'smtp_server': smtp_server,
-                'password': password,
-                'smtp_port': smtp_port,
-                'pgp_public_key': pgp_public_key
-            }, f)
-
-        setup_complete = True
-
-        # Save the provided PGP key to a file
-        with open('$HOME/hushline/public_key.asc', 'w') as keyfile:
-            keyfile.write(pgp_public_key)
-
-        return redirect(url_for('index'))
-
-    return render_template('setup.html')
-
-@app.route('/')
-def index():
-    if not setup_complete:
-        return redirect(url_for('setup'))
-    
-    return '👍 Successfully submitted! The installation script will now resume.'
-
-if __name__ == '__main__':
-    qr = segno.make(f'https://hushline.local/setup')
-    with open("/tmp/qr_code.txt", "w") as f:
-        qr.terminal(out=f)
-    app.run(host='0.0.0.0', port=5001)
-EOL
-
-# Configure Nginx
-cat >/etc/nginx/sites-available/hushline-setup.nginx <<EOL
-server {
-    listen 80;
-    server_name hushline.local;
-    return 301 https://\$host\$request_uri;
-}
-
-server {
-    listen 443 ssl;
-    server_name hushline.local;
-
-    ssl_certificate /etc/nginx/hushline.local.pem;
-    ssl_certificate_key /etc/nginx/hushline.local-key.pem;
-
-    location / {
-        proxy_pass http://127.0.0.1:5001;
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-        proxy_connect_timeout 300s;
-        proxy_send_timeout 300s;
-        proxy_read_timeout 300s;
-    }
-
-    add_header Strict-Transport-Security "max-age=63072000; includeSubdomains";
-    add_header X-Frame-Options DENY;
-    add_header X-Content-Type-Options nosniff;
-    add_header Content-Security-Policy "default-src 'self'; frame-ancestors 'none'";
-    add_header Permissions-Policy "geolocation=(), midi=(), notifications=(), push=(), sync-xhr=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), speaker=(), vibrate=(), fullscreen=(), payment=(), interest-cohort=()";
-    add_header Referrer-Policy "no-referrer";
-    add_header X-XSS-Protection "1; mode=block";
-}
-EOL
+mv $HOME/blackbox/blackbox-setup.py $HOME/hushline
+mv $HOME/blackbox/hushline-setup.nginx /etc/nginx/sites-available
 
 sudo ln -sf /etc/nginx/sites-available/hushline-setup.nginx /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl restart nginx
@@ -181,73 +87,7 @@ ln -sf /etc/nginx/sites-available/hushline-setup.nginx /etc/nginx/sites-enabled/
 nginx -t && systemctl restart nginx || error_exit
 
 # Create a new script to display status on the e-ink display
-cat >$HOME/hushline/display-setup-qr-beta.py <<EOL
-import os
-import sys
-import time
-import qrcode
-from waveshare_epd import epd2in7_V2
-from PIL import Image, ImageDraw, ImageFont
-
-def generate_qr_code(data):
-    print("Generating QR code...")
-    qr = qrcode.QRCode(
-        version=1,
-        error_correction=qrcode.constants.ERROR_CORRECT_L,
-        box_size=10,
-        border=4,
-    )
-    qr.add_data(data)
-    qr.make(fit=True)
-    img = qr.make_image(fill='black', back_color='white')
-    img = img.convert('1')  # Convert to 1-bit image
-    
-    # Calculate the new size preserving aspect ratio
-    base_width, base_height = img.size
-    aspect_ratio = float(base_width) / float(base_height)
-    new_height = int(epd2in7_V2.EPD_HEIGHT)
-    new_width = int(aspect_ratio * new_height)
-
-    if new_width > epd2in7_V2.EPD_WIDTH:
-        new_width = epd2in7_V2.EPD_WIDTH
-        new_height = int(new_width / aspect_ratio)
-
-    # Calculate position to paste
-    x_pos = (epd2in7_V2.EPD_WIDTH - new_width) // 2
-    y_pos = (epd2in7_V2.EPD_HEIGHT - new_height) // 2
-    
-    img_resized = img.resize((new_width, new_height))
-    
-    # Create a blank (white) image to paste the QR code on
-    img_blank = Image.new('1', (epd2in7_V2.EPD_WIDTH, epd2in7_V2.EPD_HEIGHT), 255)
-    img_blank.paste(img_resized, (x_pos, y_pos))
-
-    # Save to disk for debugging
-    img_blank.save("debug_qr_code.png")
-    
-    return img_blank
-
-def main():
-    epd = epd2in7_V2.EPD()
-    epd.init()
-
-    # Generate QR code for your URL or data
-    qr_code_image = generate_qr_code("http://hushline.local:5000/setup")
-
-    # Clear frame memory
-    epd.Clear()
-    
-    # Display the QR code
-    epd.display(epd.getbuffer(qr_code_image))
-
-    time.sleep(2)
-
-    # You could also put it to sleep or perform other operations on the display here
-    epd.sleep()
-    
-if __name__ == "__main__":
-    main()
-EOL
+mv $HOME/blackbox/v2/qr-setup.py $HOME/hushline/
 
 nohup ./venv/bin/python3 display-setup-qr-beta.py --host=0.0.0.0 &
 
@@ -301,9 +141,10 @@ EOL
 chmod 444 /etc/systemd/system/hush-line.service
 rm /tmp/setup_config.json
 
-sudo systemctl daemon-reload
-sudo systemctl enable hush-line.service
-sudo systemctl start hush-line.service
+# Enanle Hush Line service
+systemctl daemon-reload
+systemctl enable hush-line.service
+systemctl start hush-line.service
 
 # Check if the application is running and listening on the expected address and port
 sleep 5
@@ -313,18 +154,14 @@ if ! netstat -tuln | grep -q '127.0.0.1:5000'; then
 fi
 
 # Create Tor configuration file
-sudo tee /etc/tor/torrc <<EOL
-RunAsDaemon 1
-HiddenServiceDir /var/lib/tor/hidden_service/
-HiddenServicePort 80 127.0.0.1:5000
-EOL
+mv $HOME/blackbox/torrc /etc/tor
 
 # Restart Tor service
-sudo systemctl restart tor.service
+systemctl restart tor.service
 sleep 10
 
 # Get the Onion address
-ONION_ADDRESS=$(sudo cat /var/lib/tor/hidden_service/hostname)
+ONION_ADDRESS=$(cat /var/lib/tor/hidden_service/hostname)
 
 # Configure Nginx
 cat >/etc/nginx/sites-available/hush-line.nginx <<EOL
@@ -363,65 +200,10 @@ server {
 }
 EOL
 
-# Configure Nginx with privacy-preserving logging
-cat >/etc/nginx/nginx.conf <<EOL
-user www-data;
-worker_processes auto;
-pid /run/nginx.pid;
-include /etc/nginx/modules-enabled/*.conf;
-events {
-        worker_connections 768;
-        # multi_accept on;
-}
-http {
-        ##
-        # Basic Settings
-        ##
-        sendfile on;
-        tcp_nopush on;
-        types_hash_max_size 2048;
-        # server_tokens off;
-        # server_names_hash_bucket_size 64;
-        # server_name_in_redirect off;
-        include /etc/nginx/mime.types;
-        default_type application/octet-stream;
-        ##
-        # SSL Settings
-        ##
-        ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3; # Dropping SSLv3, ref: POODLE
-        ssl_prefer_server_ciphers on;
-        ##
-        # Logging Settings
-        ##
-        # access_log /var/log/nginx/access.log;
-        error_log /var/log/nginx/error.log;
-        ##
-        # Gzip Settings
-        ##
-        gzip on;
-        # gzip_vary on;
-        # gzip_proxied any;
-        # gzip_comp_level 6;
-        # gzip_buffers 16 8k;
-        # gzip_http_version 1.1;
-        # gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
-        ##
-        # Virtual Host Configs
-        ##
-        include /etc/nginx/conf.d/*.conf;
-        include /etc/nginx/sites-enabled/*;
-        ##
-        # Enable privacy preserving logging
-        ##
-        geoip_country /usr/share/GeoIP/GeoIP.dat;
-        log_format privacy '0.0.0.0 - \$remote_user [\$time_local] "\$request" \$status \$body_bytes_sent "\$http_referer" "-" \$geoip_country_code';
+mv $HOME/blackbox/nginx.conf /etc/nginx
 
-        access_log /var/log/nginx/access.log privacy;
-}
-EOL
-
-sudo ln -sf /etc/nginx/sites-available/hush-line.nginx /etc/nginx/sites-enabled/
-sudo nginx -t && sudo systemctl restart nginx
+ln -sf /etc/nginx/sites-available/hush-line.nginx /etc/nginx/sites-enabled/
+nginx -t && systemctl restart nginx
 
 if [ -e "/etc/nginx/sites-enabled/default" ]; then
     rm /etc/nginx/sites-enabled/default
@@ -440,19 +222,19 @@ display_status_indicator() {
 }
 
 # Enable the "security" and "updates" repositories
-sudo sed -i 's/\/\/\s\+"\${distro_id}:\${distro_codename}-security";/"\${distro_id}:\${distro_codename}-security";/g' /etc/apt/apt.conf.d/50unattended-upgrades
-sudo sed -i 's/\/\/\s\+"\${distro_id}:\${distro_codename}-updates";/"\${distro_id}:\${distro_codename}-updates";/g' /etc/apt/apt.conf.d/50unattended-upgrades
-sudo sed -i 's|//\s*Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";|Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";|' /etc/apt/apt.conf.d/50unattended-upgrades
-sudo sed -i 's|//\s*Unattended-Upgrade::Remove-Unused-Dependencies "true";|Unattended-Upgrade::Remove-Unused-Dependencies "true";|' /etc/apt/apt.conf.d/50unattended-upgrades
+sed -i 's/\/\/\s\+"\${distro_id}:\${distro_codename}-security";/"\${distro_id}:\${distro_codename}-security";/g' /etc/apt/apt.conf.d/50unattended-upgrades
+sed -i 's/\/\/\s\+"\${distro_id}:\${distro_codename}-updates";/"\${distro_id}:\${distro_codename}-updates";/g' /etc/apt/apt.conf.d/50unattended-upgrades
+sed -i 's|//\s*Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";|Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";|' /etc/apt/apt.conf.d/50unattended-upgrades
+sed -i 's|//\s*Unattended-Upgrade::Remove-Unused-Dependencies "true";|Unattended-Upgrade::Remove-Unused-Dependencies "true";|' /etc/apt/apt.conf.d/50unattended-upgrades
 
-sudo sh -c 'echo "APT::Periodic::Update-Package-Lists \"1\";" > /etc/apt/apt.conf.d/20auto-upgrades'
-sudo sh -c 'echo "APT::Periodic::Unattended-Upgrade \"1\";" >> /etc/apt/apt.conf.d/20auto-upgrades'
+sh -c 'echo "APT::Periodic::Update-Package-Lists \"1\";" > /etc/apt/apt.conf.d/20auto-upgrades'
+sh -c 'echo "APT::Periodic::Unattended-Upgrade \"1\";" >> /etc/apt/apt.conf.d/20auto-upgrades'
 
 # Configure unattended-upgrades
-echo 'Unattended-Upgrade::Automatic-Reboot "true";' | sudo tee -a /etc/apt/apt.conf.d/50unattended-upgrades
-echo 'Unattended-Upgrade::Automatic-Reboot-Time "02:00";' | sudo tee -a /etc/apt/apt.conf.d/50unattended-upgrades
+echo 'Unattended-Upgrade::Automatic-Reboot "true";' | tee -a /etc/apt/apt.conf.d/50unattended-upgrades
+echo 'Unattended-Upgrade::Automatic-Reboot-Time "02:00";' | tee -a /etc/apt/apt.conf.d/50unattended-upgrades
 
-sudo systemctl restart unattended-upgrades
+systemctl restart unattended-upgrades
 
 echo "Automatic updates have been installed and configured."
 
@@ -460,51 +242,11 @@ echo "Automatic updates have been installed and configured."
 
 echo "Configuring fail2ban..."
 
-sudo systemctl start fail2ban
-sudo systemctl enable fail2ban
-sudo cp /etc/fail2ban/jail.{conf,local}
+systemctl start fail2ban
+systemctl enable fail2ban
+cp /etc/fail2ban/jail.{conf,local}
 
-cat >/etc/fail2ban/jail.local <<EOL
-[DEFAULT]
-bantime  = 10m
-findtime = 10m
-maxretry = 5
-
-[sshd]
-enabled = true
-
-# 404 Errors
-[nginx-http-auth]
-enabled  = true
-filter   = nginx-http-auth
-port     = http,https
-logpath  = /var/log/nginx/error.log
-maxretry = 5
-
-# Rate Limiting
-[nginx-limit-req]
-enabled  = true
-filter   = nginx-limit-req
-port     = http,https
-logpath  = /var/log/nginx/error.log
-maxretry = 5
-
-# 403 Errors
-[nginx-botsearch]
-enabled  = true
-filter   = nginx-botsearch
-port     = http,https
-logpath  = /var/log/nginx/access.log
-maxretry = 10
-
-# Bad Bots and Crawlers
-[nginx-badbots]
-enabled  = true
-filter   = nginx-badbots
-port     = http,https
-logpath  = /var/log/nginx/access.log
-maxretry = 2
-EOL
+mv $HOME/blackbox/jail.local /etc/fail2ban
 
 sudo systemctl restart fail2ban
 
@@ -597,7 +339,7 @@ echo "display_status_indicator() {
 echo "display_status_indicator" >>/etc/bash.bashrc
 source /etc/bash.bashrc
 
-sudo systemctl restart hush-line
+systemctl restart hush-line
 
 send_email
 
