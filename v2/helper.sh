@@ -13,6 +13,7 @@ raspi-config
 # Update system
 apt update && apt -y dist-upgrade && apt -y autoremove
 
+cd $HOME
 git clone https://github.com/scidsg/hushline.git
 git clone https://github.com/scidsg/blackbox.git
 chmod +x $HOME/blackbox/v2/install-blackbox.sh
