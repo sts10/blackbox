@@ -15,7 +15,7 @@ apt update && apt -y dist-upgrade && apt -y autoremove
 
 git clone https://github.com/scidsg/hushline.git
 git clone https://github.com/scidsg/blackbox.git
-chmod +x /home/hush/blackbox/v1/install-blackbox.sh
+chmod +x $HOME/blackbox/v1/install-blackbox.sh
 
 # Create a new script to display status on the e-ink display
 cat >/etc/systemd/system/blackbox-installer.service <<EOL
@@ -24,7 +24,7 @@ Description=Blackbox Installation Helper
 After=multi-user.target
 
 [Service]
-ExecStart=/home/hush/blackbox/v1/install-blackbox.sh
+ExecStart=$HOME/blackbox/v1/install-blackbox.sh
 Type=oneshot
 RemainAfterExit=yes
 
