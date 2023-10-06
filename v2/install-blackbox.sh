@@ -74,8 +74,8 @@ else
     echo "SPI interface is already enabled."
 fi
 
-mv $HOME/blackbox/blackbox-setup.py $HOME/hushline
-mv $HOME/blackbox/hushline-setup.nginx /etc/nginx/sites-available
+mv $HOME/blackbox/assets/blackbox-setup.py $HOME/hushline
+mv $HOME/blackbox/assets/hushline-setup.nginx /etc/nginx/sites-available
 
 sudo ln -sf /etc/nginx/sites-available/hushline-setup.nginx /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl restart nginx
@@ -154,7 +154,7 @@ if ! netstat -tuln | grep -q '127.0.0.1:5000'; then
 fi
 
 # Create Tor configuration file
-mv $HOME/blackbox/torrc /etc/tor
+mv $HOME/blackbox/assets/torrc /etc/tor
 
 # Restart Tor service
 systemctl restart tor.service
@@ -200,7 +200,7 @@ server {
 }
 EOL
 
-mv $HOME/blackbox/nginx.conf /etc/nginx
+mv $HOME/blackbox/assets/nginx.conf /etc/nginx
 
 ln -sf /etc/nginx/sites-available/hush-line.nginx /etc/nginx/sites-enabled/
 nginx -t && systemctl restart nginx
@@ -246,7 +246,7 @@ systemctl start fail2ban
 systemctl enable fail2ban
 cp /etc/fail2ban/jail.{conf,local}
 
-mv $HOME/blackbox/jail.local /etc/fail2ban
+mv $HOME/blackbox/assets/jail.local /etc/fail2ban
 
 sudo systemctl restart fail2ban
 
