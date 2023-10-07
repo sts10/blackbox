@@ -25,7 +25,8 @@ Description=Blackbox Installation Helper
 After=multi-user.target
 
 [Service]
-ExecStart=$HOME/blackbox/v2/install-blackbox.sh
+ExecStart=/root/blackbox/v2/install-blackbox.sh
+WorkingDirectory=/root
 Type=oneshot
 RemainAfterExit=yes
 
