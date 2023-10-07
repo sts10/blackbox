@@ -28,6 +28,8 @@ wget https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.
 sleep 10
 chmod +x mkcert-v1.4.4-linux-arm64
 sudo mv mkcert-v1.4.4-linux-arm64 /usr/local/bin/mkcert
+export CAROOT="/home/hush/.local/share/mkcert"
+mkdir -p "$CAROOT"  # Ensure the directory exists
 mkcert -install
 
 # Create a certificate for hushline.local
@@ -181,7 +183,7 @@ ln -sf /etc/nginx/sites-available/hushline-setup.nginx /etc/nginx/sites-enabled/
 nginx -t && systemctl restart nginx || error_exit
 
 # Create a new script to display status on the e-ink display
-cat >/home/hush/hushline/display-setup-qr-beta.py <<EOL
+cat >/home/hush/hushline/qr-setup.py <<EOL
 import os
 import sys
 import time
@@ -249,7 +251,7 @@ if __name__ == "__main__":
     main()
 EOL
 
-nohup ./venv/bin/python3 display-setup-qr-beta.py --host=0.0.0.0 &
+nohup ./venv/bin/python3 qr-setup.py --host=0.0.0.0 &
 
 # Launch Flask app for setup
 nohup ./venv/bin/python3 blackbox-setup.py --host=0.0.0.0 &

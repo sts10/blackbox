@@ -28,6 +28,8 @@ wget https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.
 sleep 10
 chmod +x mkcert-v1.4.4-linux-arm64
 sudo mv mkcert-v1.4.4-linux-arm64 /usr/local/bin/mkcert
+export CAROOT="/home/hush/.local/share/mkcert"
+mkdir -p "$CAROOT"  # Ensure the directory exists
 mkcert -install
 
 # Create a certificate for hushline.local
