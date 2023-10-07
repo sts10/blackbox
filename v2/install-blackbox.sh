@@ -15,22 +15,19 @@ error_exit() {
 # Trap any errors and call error_exit function
 trap error_exit ERR
 
-# Go to user's home directory
-cd $HOME
-
 # Update and upgrade
-sudo apt update && sudo apt -y dist-upgrade && sudo apt -y autoremove
+apt update && apt -y dist-upgrade && apt -y autoremove
 
 # Install required packages
-sudo apt-get -y install git python3 python3-venv python3-pip nginx tor whiptail libnginx-mod-http-geoip geoip-database unattended-upgrades gunicorn libssl-dev net-tools jq fail2ban ufw
+apt-get -y install git python3 python3-venv python3-pip nginx tor whiptail libnginx-mod-http-geoip geoip-database unattended-upgrades gunicorn libssl-dev net-tools jq fail2ban ufw
 
 # Install mkcert and its dependencies
 echo "Installing mkcert and its dependencies..."
-sudo apt install -y libnss3-tools
+apt install -y libnss3-tools
 wget https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-arm64
 sleep 10
 chmod +x mkcert-v1.4.4-linux-arm64
-sudo mv mkcert-v1.4.4-linux-arm64 /usr/local/bin/mkcert
+mv mkcert-v1.4.4-linux-arm64 /usr/local/bin/mkcert
 mkcert -install
 
 # Create a certificate for hushline.local
@@ -38,8 +35,8 @@ echo "Creating certificate for hushline.local..."
 mkcert hushline.local
 
 # Move and link the certificates to Nginx's directory (optional, modify as needed)
-sudo mv hushline.local.pem /etc/nginx/
-sudo mv hushline.local-key.pem /etc/nginx/
+mv hushline.local.pem /etc/nginx/
+mv hushline.local-key.pem /etc/nginx/
 echo "Certificate and key for hushline.local have been created and moved to /etc/nginx/."
 
 # Create a virtual environment and install dependencies
@@ -71,7 +68,7 @@ apt-get -y autoremove
 
 # Enable SPI interface
 if ! grep -q "dtparam=spi=on" /boot/config.txt; then
-    echo "dtparam=spi=on" | sudo tee -a /boot/config.txt
+    echo "dtparam=spi=on" | tee -a /boot/config.txt
     echo "SPI interface enabled."
 else
     echo "SPI interface is already enabled."

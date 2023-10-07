@@ -15,9 +15,6 @@ error_exit() {
 # Trap any errors and call error_exit function
 trap error_exit ERR
 
-# Go to user's home directory
-cd $HOME
-
 # Update and upgrade
 sudo apt update && sudo apt -y dist-upgrade && sudo apt -y autoremove
 
