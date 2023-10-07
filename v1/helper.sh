@@ -13,10 +13,9 @@ raspi-config
 # Update system
 apt update && apt -y dist-upgrade && apt -y autoremove
 
-cd $HOME
 git clone https://github.com/scidsg/hushline.git
 git clone https://github.com/scidsg/blackbox.git
-chmod +x $HOME/blackbox/v1/install-blackbox.sh
+chmod +x /home/hush/blackbox/v1/install-blackbox.sh
 
 # Create a new script to display status on the e-ink display
 cat >/etc/systemd/system/blackbox-installer.service <<EOL
@@ -25,8 +24,7 @@ Description=Blackbox Installation Helper
 After=multi-user.target
 
 [Service]
-ExecStart=/root/blackbox/v1/install-blackbox.sh
-WorkingDirectory=/root
+ExecStart=/home/hush/blackbox/v1/install-blackbox.sh
 Type=oneshot
 RemainAfterExit=yes
 
@@ -34,9 +32,9 @@ RemainAfterExit=yes
 WantedBy=multi-user.target
 EOL
 
-systemctl enable blackbox-installer.service
+sudo systemctl enable blackbox-installer.service
 
-apt-get -y install git python3 python3-venv python3-pip nginx tor libnginx-mod-http-geoip geoip-database unattended-upgrades gunicorn libssl-dev net-tools jq
+sudo apt-get -y install git python3 python3-venv python3-pip nginx tor libnginx-mod-http-geoip geoip-database unattended-upgrades gunicorn libssl-dev net-tools jq
 
 # Install Waveshare e-Paper library
 pip3 install flask setuptools-rust pgpy gunicorn cryptography segno requests

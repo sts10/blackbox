@@ -16,18 +16,18 @@ error_exit() {
 trap error_exit ERR
 
 # Update and upgrade
-apt update && apt -y dist-upgrade && apt -y autoremove
+sudo apt update && sudo apt -y dist-upgrade && sudo apt -y autoremove
 
 # Install required packages
-apt-get -y install git python3 python3-venv python3-pip nginx tor whiptail libnginx-mod-http-geoip geoip-database unattended-upgrades gunicorn libssl-dev net-tools jq fail2ban ufw
+sudo apt-get -y install git python3 python3-venv python3-pip nginx tor whiptail libnginx-mod-http-geoip geoip-database unattended-upgrades gunicorn libssl-dev net-tools jq fail2ban ufw
 
 # Install mkcert and its dependencies
 echo "Installing mkcert and its dependencies..."
-apt install -y libnss3-tools
+sudo apt install -y libnss3-tools
 wget https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-arm64
 sleep 10
 chmod +x mkcert-v1.4.4-linux-arm64
-mv mkcert-v1.4.4-linux-arm64 /usr/local/bin/mkcert
+sudo mv mkcert-v1.4.4-linux-arm64 /usr/local/bin/mkcert
 mkcert -install
 
 # Create a certificate for hushline.local
@@ -35,12 +35,12 @@ echo "Creating certificate for hushline.local..."
 mkcert hushline.local
 
 # Move and link the certificates to Nginx's directory (optional, modify as needed)
-mv hushline.local.pem /etc/nginx/
-mv hushline.local-key.pem /etc/nginx/
+sudo mv hushline.local.pem /etc/nginx/
+sudo mv hushline.local-key.pem /etc/nginx/
 echo "Certificate and key for hushline.local have been created and moved to /etc/nginx/."
 
 # Create a virtual environment and install dependencies
-cd $HOME/hushline
+cd /home/hush/hushline
 git restore --source=HEAD --staged --worktree -- .
 git reset HEAD -- .
 git clean -fd .
@@ -68,14 +68,14 @@ apt-get -y autoremove
 
 # Enable SPI interface
 if ! grep -q "dtparam=spi=on" /boot/config.txt; then
-    echo "dtparam=spi=on" | tee -a /boot/config.txt
+    echo "dtparam=spi=on" | sudo tee -a /boot/config.txt
     echo "SPI interface enabled."
 else
     echo "SPI interface is already enabled."
 fi
 
 # Create a new script to capture information
-cat >$HOME/hushline/blackbox-setup.py <<EOL
+cat >/home/hush/hushline/blackbox-setup.py <<EOL
 from flask import Flask, request, render_template, redirect, url_for
 import json
 import os
@@ -114,7 +114,7 @@ def setup():
         setup_complete = True
 
         # Save the provided PGP key to a file
-        with open('$HOME/hushline/public_key.asc', 'w') as keyfile:
+        with open('/home/hush/hushline/public_key.asc', 'w') as keyfile:
             keyfile.write(pgp_public_key)
 
         return redirect(url_for('index'))
@@ -171,8 +171,8 @@ server {
 }
 EOL
 
-ln -sf /etc/nginx/sites-available/hushline-setup.nginx /etc/nginx/sites-enabled/
-nginx -t && systemctl restart nginx
+sudo ln -sf /etc/nginx/sites-available/hushline-setup.nginx /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl restart nginx
 
 if [ -e "/etc/nginx/sites-enabled/default" ]; then
     rm /etc/nginx/sites-enabled/default
@@ -181,7 +181,7 @@ ln -sf /etc/nginx/sites-available/hushline-setup.nginx /etc/nginx/sites-enabled/
 nginx -t && systemctl restart nginx || error_exit
 
 # Create a new script to display status on the e-ink display
-cat >$HOME/hushline/qr-setup.py <<EOL
+cat >/home/hush/hushline/qr-setup.py <<EOL
 import os
 import sys
 import time
@@ -274,7 +274,7 @@ NOTIFY_SMTP_PORT=$(jq -r '.smtp_port' /tmp/setup_config.json)
 
 # Kill the Flask setup process and delete the install script
 pkill -f blackbox-setup.py
-rm $HOME/hushline/blackbox-setup.py
+rm /home/hush/hushline/blackbox-setup.py
 rm /etc/nginx/sites-available/hushline-setup.nginx
 rm /etc/nginx/sites-enabled/hushline-setup.nginx
 
@@ -302,9 +302,9 @@ chmod 444 /etc/systemd/system/hush-line.service
 rm /tmp/setup_config.json
 
 # Enanle Hush Line service
-systemctl daemon-reload
-systemctl enable hush-line.service
-systemctl start hush-line.service
+sudo systemctl daemon-reload
+sudo systemctl enable hush-line.service
+sudo systemctl start hush-line.service
 
 # Check if the application is running and listening on the expected address and port
 sleep 5
@@ -321,7 +321,7 @@ HiddenServicePort 80 127.0.0.1:5000
 EOL
 
 # Restart Tor service
-systemctl restart tor.service
+sudo systemctl restart tor.service
 sleep 10
 
 # Get the Onion address
@@ -421,8 +421,8 @@ http {
 }
 EOL
 
-ln -sf /etc/nginx/sites-available/hush-line.nginx /etc/nginx/sites-enabled/
-nginx -t && systemctl restart nginx
+sudo ln -sf /etc/nginx/sites-available/hush-line.nginx /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl restart nginx
 
 if [ -e "/etc/nginx/sites-enabled/default" ]; then
     rm /etc/nginx/sites-enabled/default
@@ -441,19 +441,19 @@ display_status_indicator() {
 }
 
 # Enable the "security" and "updates" repositories
-sed -i 's/\/\/\s\+"\${distro_id}:\${distro_codename}-security";/"\${distro_id}:\${distro_codename}-security";/g' /etc/apt/apt.conf.d/50unattended-upgrades
-sed -i 's/\/\/\s\+"\${distro_id}:\${distro_codename}-updates";/"\${distro_id}:\${distro_codename}-updates";/g' /etc/apt/apt.conf.d/50unattended-upgrades
-sed -i 's|//\s*Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";|Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";|' /etc/apt/apt.conf.d/50unattended-upgrades
-sed -i 's|//\s*Unattended-Upgrade::Remove-Unused-Dependencies "true";|Unattended-Upgrade::Remove-Unused-Dependencies "true";|' /etc/apt/apt.conf.d/50unattended-upgrades
+sudo sed -i 's/\/\/\s\+"\${distro_id}:\${distro_codename}-security";/"\${distro_id}:\${distro_codename}-security";/g' /etc/apt/apt.conf.d/50unattended-upgrades
+sudo sed -i 's/\/\/\s\+"\${distro_id}:\${distro_codename}-updates";/"\${distro_id}:\${distro_codename}-updates";/g' /etc/apt/apt.conf.d/50unattended-upgrades
+sudo sed -i 's|//\s*Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";|Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";|' /etc/apt/apt.conf.d/50unattended-upgrades
+sudo sed -i 's|//\s*Unattended-Upgrade::Remove-Unused-Dependencies "true";|Unattended-Upgrade::Remove-Unused-Dependencies "true";|' /etc/apt/apt.conf.d/50unattended-upgrades
 
-sh -c 'echo "APT::Periodic::Update-Package-Lists \"1\";" > /etc/apt/apt.conf.d/20auto-upgrades'
-sh -c 'echo "APT::Periodic::Unattended-Upgrade \"1\";" >> /etc/apt/apt.conf.d/20auto-upgrades'
+sudo sh -c 'echo "APT::Periodic::Update-Package-Lists \"1\";" > /etc/apt/apt.conf.d/20auto-upgrades'
+sudo sh -c 'echo "APT::Periodic::Unattended-Upgrade \"1\";" >> /etc/apt/apt.conf.d/20auto-upgrades'
 
 # Configure unattended-upgrades
 echo 'Unattended-Upgrade::Automatic-Reboot "true";' | sudo tee -a /etc/apt/apt.conf.d/50unattended-upgrades
 echo 'Unattended-Upgrade::Automatic-Reboot-Time "02:00";' | sudo tee -a /etc/apt/apt.conf.d/50unattended-upgrades
 
-systemctl restart unattended-upgrades
+sudo systemctl restart unattended-upgrades
 
 echo "Automatic updates have been installed and configured."
 
@@ -461,9 +461,9 @@ echo "Automatic updates have been installed and configured."
 
 echo "Configuring fail2ban..."
 
-systemctl start fail2ban
-systemctl enable fail2ban
-cp /etc/fail2ban/jail.{conf,local}
+sudo systemctl start fail2ban
+sudo systemctl enable fail2ban
+sudo cp /etc/fail2ban/jail.{conf,local}
 
 cat >/etc/fail2ban/jail.local <<EOL
 [DEFAULT]
@@ -535,7 +535,7 @@ HUSHLINE_PATH=""
 
 # Detect the environment (Raspberry Pi or VPS) based on some characteristic
 if [[ $(uname -n) == *"hushline"* ]]; then
-    HUSHLINE_PATH="$HOME/hushline"
+    HUSHLINE_PATH="/home/hush/hushline"
 else
     HUSHLINE_PATH="/root/hushline" # Adjusted to /root/hushline for the root user on VPS
 fi
@@ -604,7 +604,7 @@ echo "display_status_indicator() {
 echo "display_status_indicator" >>/etc/bash.bashrc
 source /etc/bash.bashrc
 
-systemctl restart hush-line
+sudo systemctl restart hush-line
 
 send_email
 
