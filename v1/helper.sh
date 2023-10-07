@@ -12,6 +12,7 @@ raspi-config
 
 # Update system
 apt update && apt -y dist-upgrade && apt -y autoremove
+apt install -y systemctl
 
 cd $HOME
 git clone https://github.com/scidsg/hushline.git
@@ -34,9 +35,9 @@ RemainAfterExit=yes
 WantedBy=multi-user.target
 EOL
 
-sudo systemctl enable blackbox-installer.service
+systemctl enable blackbox-installer.service
 
-sudo apt-get -y install git python3 python3-venv python3-pip nginx tor libnginx-mod-http-geoip geoip-database unattended-upgrades gunicorn libssl-dev net-tools jq
+apt-get -y install git python3 python3-venv python3-pip nginx tor libnginx-mod-http-geoip geoip-database unattended-upgrades gunicorn libssl-dev net-tools jq
 
 # Install Waveshare e-Paper library
 pip3 install flask setuptools-rust pgpy gunicorn cryptography segno requests
