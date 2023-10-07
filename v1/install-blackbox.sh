@@ -16,18 +16,18 @@ error_exit() {
 trap error_exit ERR
 
 # Update and upgrade
-sudo apt update && sudo apt -y dist-upgrade && sudo apt -y autoremove
+apt update && apt -y dist-upgrade && apt -y autoremove
 
 # Install required packages
-sudo apt-get -y install git python3 python3-venv python3-pip nginx tor whiptail libnginx-mod-http-geoip geoip-database unattended-upgrades gunicorn libssl-dev net-tools jq fail2ban ufw
+apt-get -y install git python3 python3-venv python3-pip nginx tor whiptail libnginx-mod-http-geoip geoip-database unattended-upgrades gunicorn libssl-dev net-tools jq fail2ban ufw
 
 # Install mkcert and its dependencies
 echo "Installing mkcert and its dependencies..."
-sudo apt install -y libnss3-tools
+apt install -y libnss3-tools
 wget https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-arm64
 sleep 10
 chmod +x mkcert-v1.4.4-linux-arm64
-sudo mv mkcert-v1.4.4-linux-arm64 /usr/local/bin/mkcert
+mv mkcert-v1.4.4-linux-arm64 /usr/local/bin/mkcert
 mkcert -install
 
 # Create a certificate for hushline.local
@@ -35,8 +35,8 @@ echo "Creating certificate for hushline.local..."
 mkcert hushline.local
 
 # Move and link the certificates to Nginx's directory (optional, modify as needed)
-sudo mv hushline.local.pem /etc/nginx/
-sudo mv hushline.local-key.pem /etc/nginx/
+mv hushline.local.pem /etc/nginx/
+mv hushline.local-key.pem /etc/nginx/
 echo "Certificate and key for hushline.local have been created and moved to /etc/nginx/."
 
 # Create a virtual environment and install dependencies
@@ -68,7 +68,7 @@ apt-get -y autoremove
 
 # Enable SPI interface
 if ! grep -q "dtparam=spi=on" /boot/config.txt; then
-    echo "dtparam=spi=on" | sudo tee -a /boot/config.txt
+    echo "dtparam=spi=on" | tee -a /boot/config.txt
     echo "SPI interface enabled."
 else
     echo "SPI interface is already enabled."
@@ -171,8 +171,8 @@ server {
 }
 EOL
 
-sudo ln -sf /etc/nginx/sites-available/hushline-setup.nginx /etc/nginx/sites-enabled/
-sudo nginx -t && sudo systemctl restart nginx
+ln -sf /etc/nginx/sites-available/hushline-setup.nginx /etc/nginx/sites-enabled/
+nginx -t && systemctl restart nginx
 
 if [ -e "/etc/nginx/sites-enabled/default" ]; then
     rm /etc/nginx/sites-enabled/default
@@ -302,9 +302,9 @@ chmod 444 /etc/systemd/system/hush-line.service
 rm /tmp/setup_config.json
 
 # Enanle Hush Line service
-sudo systemctl daemon-reload
-sudo systemctl enable hush-line.service
-sudo systemctl start hush-line.service
+systemctl daemon-reload
+systemctl enable hush-line.service
+systemctl start hush-line.service
 
 # Check if the application is running and listening on the expected address and port
 sleep 5
@@ -321,7 +321,7 @@ HiddenServicePort 80 127.0.0.1:5000
 EOL
 
 # Restart Tor service
-sudo systemctl restart tor.service
+systemctl restart tor.service
 sleep 10
 
 # Get the Onion address
@@ -421,8 +421,8 @@ http {
 }
 EOL
 
-sudo ln -sf /etc/nginx/sites-available/hush-line.nginx /etc/nginx/sites-enabled/
-sudo nginx -t && sudo systemctl restart nginx
+ln -sf /etc/nginx/sites-available/hush-line.nginx /etc/nginx/sites-enabled/
+nginx -t && systemctl restart nginx
 
 if [ -e "/etc/nginx/sites-enabled/default" ]; then
     rm /etc/nginx/sites-enabled/default
@@ -441,19 +441,19 @@ display_status_indicator() {
 }
 
 # Enable the "security" and "updates" repositories
-sudo sed -i 's/\/\/\s\+"\${distro_id}:\${distro_codename}-security";/"\${distro_id}:\${distro_codename}-security";/g' /etc/apt/apt.conf.d/50unattended-upgrades
-sudo sed -i 's/\/\/\s\+"\${distro_id}:\${distro_codename}-updates";/"\${distro_id}:\${distro_codename}-updates";/g' /etc/apt/apt.conf.d/50unattended-upgrades
-sudo sed -i 's|//\s*Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";|Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";|' /etc/apt/apt.conf.d/50unattended-upgrades
-sudo sed -i 's|//\s*Unattended-Upgrade::Remove-Unused-Dependencies "true";|Unattended-Upgrade::Remove-Unused-Dependencies "true";|' /etc/apt/apt.conf.d/50unattended-upgrades
+sed -i 's/\/\/\s\+"\${distro_id}:\${distro_codename}-security";/"\${distro_id}:\${distro_codename}-security";/g' /etc/apt/apt.conf.d/50unattended-upgrades
+sed -i 's/\/\/\s\+"\${distro_id}:\${distro_codename}-updates";/"\${distro_id}:\${distro_codename}-updates";/g' /etc/apt/apt.conf.d/50unattended-upgrades
+sed -i 's|//\s*Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";|Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";|' /etc/apt/apt.conf.d/50unattended-upgrades
+sed -i 's|//\s*Unattended-Upgrade::Remove-Unused-Dependencies "true";|Unattended-Upgrade::Remove-Unused-Dependencies "true";|' /etc/apt/apt.conf.d/50unattended-upgrades
 
-sudo sh -c 'echo "APT::Periodic::Update-Package-Lists \"1\";" > /etc/apt/apt.conf.d/20auto-upgrades'
-sudo sh -c 'echo "APT::Periodic::Unattended-Upgrade \"1\";" >> /etc/apt/apt.conf.d/20auto-upgrades'
+sh -c 'echo "APT::Periodic::Update-Package-Lists \"1\";" > /etc/apt/apt.conf.d/20auto-upgrades'
+sh -c 'echo "APT::Periodic::Unattended-Upgrade \"1\";" >> /etc/apt/apt.conf.d/20auto-upgrades'
 
 # Configure unattended-upgrades
 echo 'Unattended-Upgrade::Automatic-Reboot "true";' | sudo tee -a /etc/apt/apt.conf.d/50unattended-upgrades
 echo 'Unattended-Upgrade::Automatic-Reboot-Time "02:00";' | sudo tee -a /etc/apt/apt.conf.d/50unattended-upgrades
 
-sudo systemctl restart unattended-upgrades
+systemctl restart unattended-upgrades
 
 echo "Automatic updates have been installed and configured."
 
@@ -461,9 +461,9 @@ echo "Automatic updates have been installed and configured."
 
 echo "Configuring fail2ban..."
 
-sudo systemctl start fail2ban
-sudo systemctl enable fail2ban
-sudo cp /etc/fail2ban/jail.{conf,local}
+systemctl start fail2ban
+systemctl enable fail2ban
+cp /etc/fail2ban/jail.{conf,local}
 
 cat >/etc/fail2ban/jail.local <<EOL
 [DEFAULT]
@@ -604,7 +604,7 @@ echo "display_status_indicator() {
 echo "display_status_indicator" >>/etc/bash.bashrc
 source /etc/bash.bashrc
 
-sudo systemctl restart hush-line
+systemctl restart hush-line
 
 send_email
 
