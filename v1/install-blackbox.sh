@@ -23,6 +23,7 @@ apt-get -y install git python3 python3-venv python3-pip nginx tor whiptail libng
 
 # Install mkcert and its dependencies
 echo "Installing mkcert and its dependencies..."
+cd $HOME
 apt install -y libnss3-tools
 wget https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-arm64
 sleep 10
