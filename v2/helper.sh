@@ -12,6 +12,7 @@ raspi-config
 
 # Update system
 apt update && apt -y dist-upgrade && apt -y autoremove
+apt install -y systemctl
 
 cd $HOME
 git clone https://github.com/scidsg/hushline.git
