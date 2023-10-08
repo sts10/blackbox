@@ -24,7 +24,7 @@ Description=Blackbox Installation Helper
 After=multi-user.target
 
 [Service]
-ExecStart=/home/hush/blackbox/v2/install-blackbox.sh
+ExecStart=/home/hush/blackbox/v2/install.sh
 Type=oneshot
 RemainAfterExit=yes
 

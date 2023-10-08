@@ -16,18 +16,18 @@ error_exit() {
 trap error_exit ERR
 
 # Update and upgrade
-sudo apt update && sudo apt -y dist-upgrade && sudo apt -y autoremove
+apt update && apt -y dist-upgrade && apt -y autoremove
 
 # Install required packages
-sudo apt-get -y install git python3 python3-venv python3-pip nginx tor whiptail libnginx-mod-http-geoip geoip-database unattended-upgrades gunicorn libssl-dev net-tools jq fail2ban ufw
+apt-get -y install git python3 python3-venv python3-pip nginx tor whiptail libnginx-mod-http-geoip geoip-database unattended-upgrades gunicorn libssl-dev net-tools jq fail2ban ufw
 
 # Install mkcert and its dependencies
 echo "Installing mkcert and its dependencies..."
-sudo apt install -y libnss3-tools
+apt install -y libnss3-tools
 wget https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-arm64
 sleep 10
 chmod +x mkcert-v1.4.4-linux-arm64
-sudo mv mkcert-v1.4.4-linux-arm64 /usr/local/bin/mkcert
+mv mkcert-v1.4.4-linux-arm64 /usr/local/bin/mkcert
 export CAROOT="/home/hush/.local/share/mkcert"
 mkdir -p "$CAROOT"  # Ensure the directory exists
 mkcert -install
@@ -37,8 +37,8 @@ echo "Creating certificate for hushline.local..."
 mkcert hushline.local
 
 # Move and link the certificates to Nginx's directory (optional, modify as needed)
-sudo mv hushline.local.pem /etc/nginx/
-sudo mv hushline.local-key.pem /etc/nginx/
+mv hushline.local.pem /etc/nginx/
+mv hushline.local-key.pem /etc/nginx/
 echo "Certificate and key for hushline.local have been created and moved to /etc/nginx/."
 
 # Create a virtual environment and install dependencies
@@ -70,7 +70,7 @@ apt-get -y autoremove
 
 # Enable SPI interface
 if ! grep -q "dtparam=spi=on" /boot/config.txt; then
-    echo "dtparam=spi=on" | sudo tee -a /boot/config.txt
+    echo "dtparam=spi=on" | tee -a /boot/config.txt
     echo "SPI interface enabled."
 else
     echo "SPI interface is already enabled."
@@ -173,8 +173,8 @@ server {
 }
 EOL
 
-sudo ln -sf /etc/nginx/sites-available/hushline-setup.nginx /etc/nginx/sites-enabled/
-sudo nginx -t && sudo systemctl restart nginx
+ln -sf /etc/nginx/sites-available/hushline-setup.nginx /etc/nginx/sites-enabled/
+nginx -t && systemctl restart nginx
 
 if [ -e "/etc/nginx/sites-enabled/default" ]; then
     rm /etc/nginx/sites-enabled/default
@@ -188,7 +188,7 @@ import os
 import sys
 import time
 import qrcode
-from waveshare_epd import epd2in7
+from waveshare_epd import epd2in7_V2
 from PIL import Image, ImageDraw, ImageFont
 
 def generate_qr_code(data):
@@ -207,21 +207,21 @@ def generate_qr_code(data):
     # Calculate the new size preserving aspect ratio
     base_width, base_height = img.size
     aspect_ratio = float(base_width) / float(base_height)
-    new_height = int(epd2in7.EPD_HEIGHT)
+    new_height = int(epd2in7_V2.EPD_HEIGHT)
     new_width = int(aspect_ratio * new_height)
 
-    if new_width > epd2in7.EPD_WIDTH:
-        new_width = epd2in7.EPD_WIDTH
+    if new_width > epd2in7_V2.EPD_WIDTH:
+        new_width = epd2in7_V2.EPD_WIDTH
         new_height = int(new_width / aspect_ratio)
 
     # Calculate position to paste
-    x_pos = (epd2in7.EPD_WIDTH - new_width) // 2
-    y_pos = (epd2in7.EPD_HEIGHT - new_height) // 2
+    x_pos = (epd2in7_V2.EPD_WIDTH - new_width) // 2
+    y_pos = (epd2in7_V2.EPD_HEIGHT - new_height) // 2
     
     img_resized = img.resize((new_width, new_height))
     
     # Create a blank (white) image to paste the QR code on
-    img_blank = Image.new('1', (epd2in7.EPD_WIDTH, epd2in7.EPD_HEIGHT), 255)
+    img_blank = Image.new('1', (epd2in7_V2.EPD_WIDTH, epd2in7_V2.EPD_HEIGHT), 255)
     img_blank.paste(img_resized, (x_pos, y_pos))
 
     # Save to disk for debugging
@@ -230,14 +230,14 @@ def generate_qr_code(data):
     return img_blank
 
 def main():
-    epd = epd2in7.EPD()
+    epd = epd2in7_V2.EPD()
     epd.init()
 
     # Generate QR code for your URL or data
-    qr_code_image = generate_qr_code("https://hushline.local/setup")
+    qr_code_image = generate_qr_code("http://hushline.local:5000/setup")
 
     # Clear frame memory
-    epd.Clear(0xFF)
+    epd.Clear()
     
     # Display the QR code
     epd.display(epd.getbuffer(qr_code_image))
@@ -303,10 +303,9 @@ EOL
 chmod 444 /etc/systemd/system/hush-line.service
 rm /tmp/setup_config.json
 
-# Enanle Hush Line service
-sudo systemctl daemon-reload
-sudo systemctl enable hush-line.service
-sudo systemctl start hush-line.service
+systemctl daemon-reload
+systemctl enable hush-line.service
+systemctl start hush-line.service
 
 # Check if the application is running and listening on the expected address and port
 sleep 5
@@ -316,18 +315,18 @@ if ! netstat -tuln | grep -q '127.0.0.1:5000'; then
 fi
 
 # Create Tor configuration file
-sudo tee /etc/tor/torrc <<EOL
+tee /etc/tor/torrc <<EOL
 RunAsDaemon 1
 HiddenServiceDir /var/lib/tor/hidden_service/
 HiddenServicePort 80 127.0.0.1:5000
 EOL
 
 # Restart Tor service
-sudo systemctl restart tor.service
+systemctl restart tor.service
 sleep 10
 
 # Get the Onion address
-ONION_ADDRESS=$(sudo cat /var/lib/tor/hidden_service/hostname)
+ONION_ADDRESS=$(cat /var/lib/tor/hidden_service/hostname)
 
 # Configure Nginx
 cat >/etc/nginx/sites-available/hush-line.nginx <<EOL
@@ -423,8 +422,8 @@ http {
 }
 EOL
 
-sudo ln -sf /etc/nginx/sites-available/hush-line.nginx /etc/nginx/sites-enabled/
-sudo nginx -t && sudo systemctl restart nginx
+ln -sf /etc/nginx/sites-available/hush-line.nginx /etc/nginx/sites-enabled/
+nginx -t && systemctl restart nginx
 
 if [ -e "/etc/nginx/sites-enabled/default" ]; then
     rm /etc/nginx/sites-enabled/default
@@ -443,19 +442,19 @@ display_status_indicator() {
 }
 
 # Enable the "security" and "updates" repositories
-sudo sed -i 's/\/\/\s\+"\${distro_id}:\${distro_codename}-security";/"\${distro_id}:\${distro_codename}-security";/g' /etc/apt/apt.conf.d/50unattended-upgrades
-sudo sed -i 's/\/\/\s\+"\${distro_id}:\${distro_codename}-updates";/"\${distro_id}:\${distro_codename}-updates";/g' /etc/apt/apt.conf.d/50unattended-upgrades
-sudo sed -i 's|//\s*Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";|Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";|' /etc/apt/apt.conf.d/50unattended-upgrades
-sudo sed -i 's|//\s*Unattended-Upgrade::Remove-Unused-Dependencies "true";|Unattended-Upgrade::Remove-Unused-Dependencies "true";|' /etc/apt/apt.conf.d/50unattended-upgrades
+sed -i 's/\/\/\s\+"\${distro_id}:\${distro_codename}-security";/"\${distro_id}:\${distro_codename}-security";/g' /etc/apt/apt.conf.d/50unattended-upgrades
+sed -i 's/\/\/\s\+"\${distro_id}:\${distro_codename}-updates";/"\${distro_id}:\${distro_codename}-updates";/g' /etc/apt/apt.conf.d/50unattended-upgrades
+sed -i 's|//\s*Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";|Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";|' /etc/apt/apt.conf.d/50unattended-upgrades
+sed -i 's|//\s*Unattended-Upgrade::Remove-Unused-Dependencies "true";|Unattended-Upgrade::Remove-Unused-Dependencies "true";|' /etc/apt/apt.conf.d/50unattended-upgrades
 
-sudo sh -c 'echo "APT::Periodic::Update-Package-Lists \"1\";" > /etc/apt/apt.conf.d/20auto-upgrades'
-sudo sh -c 'echo "APT::Periodic::Unattended-Upgrade \"1\";" >> /etc/apt/apt.conf.d/20auto-upgrades'
+sh -c 'echo "APT::Periodic::Update-Package-Lists \"1\";" > /etc/apt/apt.conf.d/20auto-upgrades'
+sh -c 'echo "APT::Periodic::Unattended-Upgrade \"1\";" >> /etc/apt/apt.conf.d/20auto-upgrades'
 
 # Configure unattended-upgrades
-echo 'Unattended-Upgrade::Automatic-Reboot "true";' | sudo tee -a /etc/apt/apt.conf.d/50unattended-upgrades
-echo 'Unattended-Upgrade::Automatic-Reboot-Time "02:00";' | sudo tee -a /etc/apt/apt.conf.d/50unattended-upgrades
+echo 'Unattended-Upgrade::Automatic-Reboot "true";' | tee -a /etc/apt/apt.conf.d/50unattended-upgrades
+echo 'Unattended-Upgrade::Automatic-Reboot-Time "02:00";' | tee -a /etc/apt/apt.conf.d/50unattended-upgrades
 
-sudo systemctl restart unattended-upgrades
+systemctl restart unattended-upgrades
 
 echo "Automatic updates have been installed and configured."
 
@@ -463,9 +462,9 @@ echo "Automatic updates have been installed and configured."
 
 echo "Configuring fail2ban..."
 
-sudo systemctl start fail2ban
-sudo systemctl enable fail2ban
-sudo cp /etc/fail2ban/jail.{conf,local}
+systemctl start fail2ban
+systemctl enable fail2ban
+cp /etc/fail2ban/jail.{conf,local}
 
 cat >/etc/fail2ban/jail.local <<EOL
 [DEFAULT]
@@ -509,7 +508,7 @@ logpath  = /var/log/nginx/access.log
 maxretry = 2
 EOL
 
-sudo systemctl restart fail2ban
+systemctl restart fail2ban
 
 # Configure UFW (Uncomplicated Firewall)
 
@@ -606,7 +605,7 @@ echo "display_status_indicator() {
 echo "display_status_indicator" >>/etc/bash.bashrc
 source /etc/bash.bashrc
 
-sudo systemctl restart hush-line
+systemctl restart hush-line
 
 send_email
 
@@ -615,4 +614,4 @@ deactivate
 # Disable the trap before exiting
 trap - ERR
 
-curl -sSL https://raw.githubusercontent.com/scidsg/blackbox/main/v1/display-v1.sh | bash
+curl -sSL https://raw.githubusercontent.com/scidsg/blackbox/main/v2/display.sh | bash
