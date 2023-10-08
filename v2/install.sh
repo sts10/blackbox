@@ -234,7 +234,7 @@ def main():
     epd.init()
 
     # Generate QR code for your URL or data
-    qr_code_image = generate_qr_code("http://hushline.local:5000/setup")
+    qr_code_image = generate_qr_code("https://hushline.local/setup")
 
     # Clear frame memory
     epd.Clear()
