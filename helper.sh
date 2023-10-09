@@ -16,6 +16,24 @@ apt update && apt -y dist-upgrade && apt -y autoremove
 
 git clone https://github.com/scidsg/hushline.git
 git clone https://github.com/scidsg/blackbox.git
+if [ $1 == "1" ]; then
+chmod +x /home/hush/blackbox/v1/install.sh
+
+# Create a new script to display status on the e-ink display
+cat >/etc/systemd/system/blackbox-installer.service <<EOL
+[Unit]
+Description=Blackbox Installation Helper
+After=multi-user.target
+
+[Service]
+ExecStart=/home/hush/blackbox/install.sh 1
+Type=oneshot
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+EOL
+elif [ $1 == "2" ]; then
 chmod +x /home/hush/blackbox/v2/install.sh
 
 # Create a new script to display status on the e-ink display
@@ -25,13 +43,14 @@ Description=Blackbox Installation Helper
 After=multi-user.target
 
 [Service]
-ExecStart=/home/hush/blackbox/v2/install.sh
+ExecStart=/home/hush/blackbox/install.sh 2
 Type=oneshot
 RemainAfterExit=yes
 
 [Install]
 WantedBy=multi-user.target
 EOL
+fi
 
 sudo systemctl enable blackbox-installer.service
 
