@@ -88,8 +88,6 @@ curl -sSL https://raw.githubusercontent.com/scidsg/blackbox/main/v2/helper.sh | 
 
 **Step 13**: Over on viewing computer, open [https://blackbox.local/setup](https://blackbox.local/setup) in a browser (ignore any security warnings by clicking "Advanced" -> "Accept the Risk and continue"). Fill out form with your Blackbox email address information (we strongly recommend creating a new email account for Blackbox to use -- Gmail works well. See [this documentation for instructions](https://scidsg.github.io/blackbox-docs/book/prereqs/general.html#2-gmail)).
 
-Note: If you're using [Mailvelope](https://mailvelope.com/en/) to generate a new PGP key-pair, you'll need to export ("save") your public key as a file, and then manually upload this public key file to [keys.openpgp.org.](https://keys.openpgp.org/) Do NOT upload your private PGP key!
-
 **Step 14**: Once who've filled out this form, hit submit. In a few minutes, you should receive an encrypted confirmation email to your Hush Line email address, which, among other things, contains your Blackbox URL. Feel free to send a test message to yourself.
 
 **Step 15**: Share your new Blackbox URL with your community, along with instructions on how to [download and install the Tor Browser](https://www.torproject.org/download/). 
