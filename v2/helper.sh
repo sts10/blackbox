@@ -7,8 +7,9 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 # Enable SPI interface
-whiptail --title "E-Ink Display Setup" --msgbox "The e-paper hat communicates with the Raspberry Pi using the SPI interface, so you need to enable it.\n\nNavigate to \"Interface Options\" > \"SPI\" and select \"Yes\" to enable the SPI interface." 12 64
-raspi-config
+# 0 for enable; 1 to disable
+# See: https://www.raspberrypi.com/documentation/computers/configuration.html#spi-nonint
+sudo raspi-config nonint do_spi 0
 
 # Update system
 apt update && apt -y dist-upgrade && apt -y autoremove
