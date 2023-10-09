@@ -82,25 +82,17 @@ If your e-ink display is `Rev2.2`, run:
 curl -sSL https://raw.githubusercontent.com/scidsg/blackbox/main/v2/helper.sh | sudo bash
 ```
 
-<!-- **Step 10b**: After some programs install, you may be asked to enter your Pi's username. If so, delete the default username (`Pi`) and enter `box` instead. -->
+**Step 11**: Once all programs are installed, and you see `box@blackbox:~ $` again, reboot Pi by running `sudo reboot` or unplugging your Pi and then plugging it in again.
 
-**Step 11**: Next, in the Raspberry Pi configuration menu, arrow down to "Interface Options". In that sub-menu, choose to enable SPI interface.
+**Step 12**: After your Pi boots up again it will finish installing Blackbox, which may take a few minutes. When it's finished, a QR code will appear on the e-ink screen. This QR code leads to [https://blackbox.local/setup](https://blackbox.local/setup), where you'll configure your Blackbox.
 
-After enabling SPI, you'll be returned to the Raspberry Pi configuration menu. Use tab to navigate to the `<Finish>` option. Hit enter.
+**Step 13**: Over on viewing computer, open [https://blackbox.local/setup](https://blackbox.local/setup) in a browser (ignore any security warnings by clicking "Advanced" -> "Accept the Risk and continue"). Fill out form with your Blackbox email address information (we strongly recommend creating a new email account for Blackbox to use -- Gmail works well. See [this documentation for instructions](https://scidsg.github.io/blackbox-docs/book/prereqs/general.html#2-gmail)).
 
-Wait a few minutes for some more software to be installed on the Pi.
+Note: If you're using [Mailvelope](https://mailvelope.com/en/) to generate a new PGP key-pair, you'll need to export ("save") your public key as a file, and then manually upload this public key file to [keys.openpgp.org.](https://keys.openpgp.org/) Do NOT upload your private PGP key!
 
-**Step 12**: Once all programs are installed, and you see `box@blackbox:~ $` again, reboot Pi by running `sudo reboot` or unplugging your Pi and then plugging it in again.
+**Step 14**: Once who've filled out this form, hit submit. In a few minutes, you should receive an encrypted confirmation email to your Hush Line email address, which, among other things, contains your Blackbox URL. Feel free to send a test message to yourself.
 
-**Step 13**: After your Pi boots up again it will finish installing Blackbox, which may take a few minutes. When it's finished, a QR code will appear on the e-ink screen. This QR code leads to [https://blackbox.local/setup](https://blackbox.local/setup), where you'll configure your Blackbox.
-
-**Step 14**: Over on viewing computer, open [https://blackbox.local/setup](https://blackbox.local/setup) in a browser (ignore security warnings by clicking "Advanced" -> "Accept the Risk and continue"). Fill out form with your Blackbox email address information (we strongly recommend creating a new email account for Blackbox to use -- Gmail works well. See [this documentation for instructions](https://scidsg.github.io/blackbox-docs/book/prereqs/general.html#2-gmail)).
-
-Note: If you're using [Mailvelope](https://mailvelope.com/en/) to generate a new PGP key-pair, you'll need to export (save) your public key as a file, and then manually upload this public key file to [keys.openpgp.org.](https://keys.openpgp.org/) Do NOT upload your private PGP key!
-
-**Step 15**: Once who've completely filled out this form, hit submit. In a few minutes, you should receive a confirmation email, which, among other things, contains your Blackbox URL. 
-
-**Step 16**: Share your new Blackbox URL with your community, along with instructions on how to [download and install the Tor Browser](https://www.torproject.org/download/). 
+**Step 15**: Share your new Blackbox URL with your community, along with instructions on how to [download and install the Tor Browser](https://www.torproject.org/download/). 
 
 If your community faces [a higher threat](https://scidsg.github.io/hushline-docs/book/prereqs/threat-modeling.html), recommend to them that they better protect their anonymity by only visiting your Blackbox URL on personal devices while using a public WiFi network. [Read more about threat modeling here.](https://scidsg.github.io/hushline-docs/book/prereqs/threat-modeling.html)
 
