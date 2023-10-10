@@ -74,12 +74,12 @@ box@blackbox:~ $
 
 Next, if your e-ink display is `Rev2.1`, run:
 ```bash
-curl -sSL https://raw.githubusercontent.com/scidsg/blackbox/main/helper.sh | sudo bash -s 1
+curl --proto '=https' --tlsv1.2 -sSfL https://raw.githubusercontent.com/scidsg/blackbox/main/helper.sh | sudo bash -s 1
 ```
 
 If your e-ink display is `Rev2.2`, run:
 ```bash
-curl -sSL https://raw.githubusercontent.com/scidsg/blackbox/main/helper.sh | sudo bash -s 2
+curl --proto '=https' --tlsv1.2 -sSfL https://raw.githubusercontent.com/scidsg/blackbox/main/helper.sh | sudo bash -s 2
 ```
 
 **Step 11**: Once all programs are installed, and you see `box@blackbox:~ $` again, reboot Pi by running `sudo reboot` or unplugging your Pi and then plugging it in again.
