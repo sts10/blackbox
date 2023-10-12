@@ -9,14 +9,15 @@ fi
 # Enable SPI interface
 # 0 for enable; 1 to disable
 # See: https://www.raspberrypi.com/documentation/computers/configuration.html#spi-nonint
-sudo raspi-config nonint do_spi 0
+raspi-config nonint do_spi 0
 
 # Update system
 apt update && apt -y dist-upgrade && apt -y autoremove
 
+cd $HOME
 git clone https://github.com/scidsg/hushline.git
 git clone https://github.com/scidsg/blackbox.git
-chmod +x /home/hush/blackbox/v2/install.sh
+chmod +x $HOME/blackbox/v2/install.sh
 
 # Create a new script to display status on the e-ink display
 cat >/etc/systemd/system/blackbox-installer.service <<EOL
@@ -25,7 +26,7 @@ Description=Blackbox Installation Helper
 After=multi-user.target
 
 [Service]
-ExecStart=/home/hush/blackbox/v2/install.sh
+ExecStart=$HOME/blackbox/v2/install.sh
 Type=oneshot
 RemainAfterExit=yes
 
@@ -33,14 +34,18 @@ RemainAfterExit=yes
 WantedBy=multi-user.target
 EOL
 
-sudo systemctl enable blackbox-installer.service
+systemctl enable blackbox-installer.service
 
-sudo apt-get -y install git python3 python3-venv python3-pip nginx tor libnginx-mod-http-geoip geoip-database unattended-upgrades gunicorn libssl-dev net-tools jq
+apt-get -y install git python3 python3-venv python3-pip nginx tor libnginx-mod-http-geoip geoip-database unattended-upgrades gunicorn libssl-dev net-tools jq python3-flask python3-setuptools python3-requests python3-cryptography python3-gnupg
 
-# Install Waveshare e-Paper library
-pip3 install flask setuptools-rust pgpy gunicorn cryptography segno requests
-pip3 install qrcode[pil]
-pip3 install requests python-gnupg
+# Create a virtual environment for installing remaining Python packages
+python3 -m venv /home/hush/venv
 
-# Install other Python packages
-pip3 install RPi.GPIO spidev
+# Activate the virtual environment
+source /home/hush/venv/bin/activate
+
+# Install Waveshare e-Paper library and other Python packages
+pip install setuptools-rust pgpy gunicorn segno qrcode[pil] RPi.GPIO spidev
+
+# Deactivate the virtual environment
+deactivate

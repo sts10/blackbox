@@ -28,7 +28,7 @@ wget https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.
 sleep 10
 chmod +x mkcert-v1.4.4-linux-arm64
 mv mkcert-v1.4.4-linux-arm64 /usr/local/bin/mkcert
-export CAROOT="/home/hush/.local/share/mkcert"
+export CAROOT="$HOME/.local/share/mkcert"
 mkdir -p "$CAROOT"  # Ensure the directory exists
 mkcert -install
 
@@ -42,7 +42,7 @@ mv hushline.local-key.pem /etc/nginx/
 echo "Certificate and key for hushline.local have been created and moved to /etc/nginx/."
 
 # Create a virtual environment and install dependencies
-cd /home/hush/hushline
+cd $HOME/hushline
 git restore --source=HEAD --staged --worktree -- .
 git reset HEAD -- .
 git clean -fd .
@@ -74,7 +74,7 @@ apt-get -y autoremove
 sudo raspi-config nonint do_spi 0
 
 # Create a new script to capture information
-cat >/home/hush/hushline/blackbox-setup.py <<EOL
+cat >$HOME/hushline/blackbox-setup.py <<EOL
 from flask import Flask, request, render_template, redirect, url_for
 import json
 import os
@@ -180,7 +180,7 @@ ln -sf /etc/nginx/sites-available/hushline-setup.nginx /etc/nginx/sites-enabled/
 nginx -t && systemctl restart nginx || error_exit
 
 # Create a new script to display status on the e-ink display
-cat >/home/hush/hushline/qr-setup.py <<EOL
+cat >$HOME/hushline/qr-setup.py <<EOL
 import os
 import sys
 import time
