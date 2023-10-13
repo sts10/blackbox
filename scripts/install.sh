@@ -77,10 +77,10 @@ else
 fi
 
 # Create a new script to capture information
-mv /home/hush/blackbox-bullseye/python/blackbox-setup.py /home/hush/hushline
+mv /home/hush/blackbox/python/blackbox-setup.py /home/hush/hushline
 
 # Configure Nginx
-mv /home/hush/blackbox-bullseye/nginx/hushline-setup.nginx /etc/nginx/sites-available
+mv /home/hush/blackbox/nginx/hushline-setup.nginx /etc/nginx/sites-available
 
 ln -sf /etc/nginx/sites-available/hushline-setup.nginx /etc/nginx/sites-enabled/
 nginx -t && systemctl restart nginx
@@ -92,8 +92,8 @@ ln -sf /etc/nginx/sites-available/hushline-setup.nginx /etc/nginx/sites-enabled/
 nginx -t && systemctl restart nginx || error_exit
 
 # Create a new script to display status on the e-ink display
-mv /home/hush/blackbox-bullseye/python/qr-setup.py /home/hush/hushline
-mv /home/hush/blackbox-bullseye/templates/setup.html /home/hush/hushline/templates
+mv /home/hush/blackbox/python/qr-setup.py /home/hush/hushline
+mv /home/hush/blackbox/templates/setup.html /home/hush/hushline/templates
 
 nohup ./venv/bin/python3 qr-setup.py --host=0.0.0.0 &
 
@@ -159,7 +159,7 @@ if ! netstat -tuln | grep -q '127.0.0.1:5000'; then
 fi
 
 # Create Tor configuration file
-mv /home/hush/blackbox-bullseye/torrc /etc/tor
+mv /home/hush/blackbox/torrc /etc/tor
 
 # Restart Tor service
 systemctl restart tor.service
@@ -169,8 +169,8 @@ sleep 10
 ONION_ADDRESS=$(cat /var/lib/tor/hidden_service/hostname)
 
 # Configure Nginx
-mv /home/hush/blackbox-bullseye/nginx/hush-line.nginx /etc/nginx/sites-available
-mv /home/hush/blackbox-bullseye/nginx/nginx.conf /etc/nginx
+mv /home/hush/blackbox/nginx/hush-line.nginx /etc/nginx/sites-available
+mv /home/hush/blackbox/nginx/nginx.conf /etc/nginx
 
 ln -sf /etc/nginx/sites-available/hush-line.nginx /etc/nginx/sites-enabled/
 nginx -t && systemctl restart nginx
@@ -192,8 +192,8 @@ display_status_indicator() {
 }
 
 # Configure Unattended Upgrades
-mv /home/hush/blackbox-bullseye/config/50unattended-upgrades /etc/apt/apt.conf.d
-mv /home/hush/blackbox-bullseye/config/20auto-upgrades /etc/apt/apt.conf.d
+mv /home/hush/blackbox/config/50unattended-upgrades /etc/apt/apt.conf.d
+mv /home/hush/blackbox/config/20auto-upgrades /etc/apt/apt.conf.d
 
 systemctl restart unattended-upgrades
 
@@ -207,7 +207,7 @@ systemctl start fail2ban
 systemctl enable fail2ban
 cp /etc/fail2ban/jail.{conf,local}
 
-mv /home/hush/blackbox-bullseye/config/jail.local /etc/fail2ban
+mv /home/hush/blackbox/config/jail.local /etc/fail2ban
 
 systemctl restart fail2ban
 
@@ -315,4 +315,4 @@ deactivate
 # Disable the trap before exiting
 trap - ERR
 
-curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/scidsg/blackbox-bullseye/main/display.sh | bash
+curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/scidsg/blackbox/main/display.sh | bash
