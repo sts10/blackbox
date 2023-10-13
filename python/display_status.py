@@ -1,32 +1,3 @@
-#!/bin/bash
-
-#Run as root
-if [[ $EUID -ne 0 ]]; then
-  echo "Script needs to run as root. Elevating permissions now."
-  exec sudo /bin/bash "$0" "$@"
-fi
-
-# Install required packages for e-ink display
-apt update
-apt-get -y dist-upgrade
-apt-get install -y python3-pip
-
-# Install Waveshare e-Paper library
-pip3 install /home/hush/hushline/e-Paper/RaspberryPi_JetsonNano/python/
-pip3 install qrcode[pil]
-pip3 install requests python-gnupg
-
-# Install other Python packages
-pip3 install RPi.GPIO spidev
-apt-get -y autoremove
-
-# Enable SPI interface
-# 0 for enable; 1 to disable
-# See: https://www.raspberrypi.com/documentation/computers/configuration.html#spi-nonint
-sudo raspi-config nonint do_spi 0
-
-# Create a new script to display status on the e-ink display
-cat >/home/hush/hushline/display_status.py <<EOL
 import os
 import sys
 import time
@@ -35,7 +6,7 @@ import qrcode
 import requests
 import gnupg
 import traceback
-from waveshare_epd import epd2in7
+from waveshare_epd import epd2in7_V2
 from PIL import Image, ImageDraw, ImageFont
 from PIL import ImageOps
 print(Image.__version__)
@@ -133,7 +104,7 @@ def display_status(epd, status, onion_address, name, email, key_id, expires):
     # Display the PGP owner information
     max_width = epd.height - x_pos_info - 5
     chars_per_line = max_width // (font_info.getbbox('A')[2] - font_info.getbbox('A')[0])
-
+    
     # Check if 'expires' is non-empty and numeric before converting
     if expires and expires.isdigit():
         expiry_date = time.strftime("%Y-%m-%d", time.gmtime(int(expires)))
@@ -141,6 +112,7 @@ def display_status(epd, status, onion_address, name, email, key_id, expires):
         expiry_date = "Never"  # or some other appropriate default or message
 
     pgp_info = f'{name} <{email}>\nKey ID: {key_id[-8:]}\nExp: {expiry_date}'
+
     wrapped_pgp_info = []
 
     for line in pgp_info.split('\n'):
@@ -186,7 +158,7 @@ def clear_screen(epd):
 
 def main():
     print("Starting main function")
-    epd = epd2in7.EPD()
+    epd = epd2in7_V2.EPD()
     epd.init()
     print("EPD initialized")
 
@@ -221,81 +193,3 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print('Exiting...')
         sys.exit(0)
-EOL
-
-# Create a new script to display status on the e-ink display
-cat >/home/hush/hushline/clear_display.py <<EOL
-import sys
-from waveshare_epd import epd2in7
-from PIL import Image
-
-def clear_screen(epd):
-    print("Clearing the screen")
-    image = Image.new('1', (epd.height, epd.width), 255)
-    image_rotated = image.rotate(90, expand=True)
-    epd.display(epd.getbuffer(image_rotated))
-    epd.sleep()
-
-def main():
-    print("Starting clear_display script")
-    epd = epd2in7.EPD()
-    epd.init()
-    clear_screen(epd)
-
-if __name__ == '__main__':
-    try:
-        main()
-    except Exception as e:
-        print(f"Unexpected error: {e}")
-        sys.exit(1)
-EOL
-
-# Clear display before shutdown
-cat >/etc/systemd/system/clear-display.service <<EOL
-[Unit]
-Description=Clear e-Paper display before shutdown
-DefaultDependencies=no
-Before=shutdown.target reboot.target halt.target
-
-[Service]
-Type=oneshot
-ExecStart=/usr/bin/python3 /home/hush/hushline/clear_display.py
-TimeoutStartSec=0
-
-[Install]
-WantedBy=halt.target reboot.target shutdown.target
-EOL
-sudo systemctl daemon-reload
-sudo systemctl enable clear-display.service
-
-# Create a systemd service to run the display_status.py script on boot
-cat >/etc/systemd/system/display-status.service <<EOL
-[Unit]
-Description=Display Hush Line Information on E-Paper Display
-After=network.target
-
-[Service]
-User=root
-ExecStart=/usr/bin/python3 /home/hush/hushline/display_status.py
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-EOL
-
-# Enable and start the new service
-sudo systemctl daemon-reload
-sudo systemctl enable display-status.service
-sudo systemctl start display-status.service
-
-# Download splash screen image
-cd /home/hush/hushline
-wget https://raw.githubusercontent.com/scidsg/hushline-assets/main/images/splash.png
-
-echo "✅ E-ink display configuration complete. Rebooting your Raspberry Pi..."
-sleep 3
-
-sudo systemctl disable blackbox-installer.service
-sleep 3
-
-sudo reboot
