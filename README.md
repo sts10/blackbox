@@ -2,7 +2,7 @@
 
 Blackbox is your personal, anonymous tip line enabling anyone to privately submit messages that only you can read. 
 
-Our installation is optimized by using the e-paper display to make it a no-code, no-terminal configuration process. 
+Our installation is optimized by using an e-paper display to make it a no-code, no-terminal configuration process. 
 
 ## Is Blackbox for me?
 Blackbox is intended for use when:
