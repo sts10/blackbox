@@ -9,7 +9,7 @@ from cryptography.utils import CryptographyDeprecationWarning
 
 warnings.filterwarnings("ignore", category=CryptographyDeprecationWarning)
 
-# retreive variables from system input
+# Retrieve variables from system input
 smtp_server = sys.argv[1]
 smtp_port = sys.argv[2]
 email_address = sys.argv[3]
