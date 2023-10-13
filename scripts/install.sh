@@ -243,7 +243,7 @@ else
 fi
 
 send_email() {
-    nohup ./venv/bin/python3 send_email.py "$NOTIFY_SMTP_SERVER", "$NOTIFY_SMTP_PORT:, "$EMAIL", "$NOTIFY_PASSWORD", "$HUSHLINE_PATH", "$ONION_ADDRESS"
+    nohup ./venv/bin/python3 send_email.py "$NOTIFY_SMTP_SERVER", "$NOTIFY_SMTP_PORT", "$EMAIL", "$NOTIFY_PASSWORD", "$HUSHLINE_PATH", "$ONION_ADDRESS"
 }
 
 echo "
