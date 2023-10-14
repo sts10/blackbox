@@ -78,4 +78,4 @@ echo "dtoverlay=disable-usb" | tee -a /boot/config.txt
 sleep 3
 
 # Shutdown the device
-shutdown -h now
+# shutdown -h now
