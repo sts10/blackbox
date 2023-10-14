@@ -6,9 +6,21 @@ if [[ $EUID -ne 0 ]]; then
   exec sudo /bin/bash "$0" "$@"
 fi
 
+# Weclome
+
+echo "
+██████  ██       █████   ██████ ██   ██ ██████   ██████  ██   ██ 
+██   ██ ██      ██   ██ ██      ██  ██  ██   ██ ██    ██  ██ ██  
+██████  ██      ███████ ██      █████   ██████  ██    ██   ███   
+██   ██ ██      ██   ██ ██      ██  ██  ██   ██ ██    ██  ██ ██  
+██████  ███████ ██   ██  ██████ ██   ██ ██████   ██████  ██   ██ 
+
+The physical product for Hush Line.
+https://hushline
+"
+sleep 3
+
 # Enable SPI interface
-# 0 for enable; 1 to disable
-# See: https://www.raspberrypi.com/documentation/computers/configuration.html#spi-nonint
 raspi-config nonint do_spi 0
 
 # Update system
