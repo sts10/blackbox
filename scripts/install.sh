@@ -42,7 +42,7 @@ mv hushline.local-key.pem /etc/nginx/
 echo "Certificate and key for hushline.local have been created and moved to /etc/nginx/."
 
 # Create a virtual environment and install dependencies
-cd /home/hush/hushline
+cd hushline
 git restore --source=HEAD --staged --worktree -- .
 git reset HEAD -- .
 git clean -fd .
