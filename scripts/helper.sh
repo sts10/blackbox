@@ -58,16 +58,15 @@ pip3 install requests python-gnupg
 pip3 install RPi.GPIO spidev
 
 # Configure UFW (Uncomplicated Firewall)
-
 echo "Configuring UFW..."
-sleep 1
-echo "Disabling SSH access..."
 
 # Default rules
 ufw default deny incoming
 ufw default allow outgoing
 ufw allow 80/tcp
 ufw allow 443/tcp
+
+echo "Disabling SSH access..."
 ufw deny proto tcp from any to any port 22
 
 # Logging
