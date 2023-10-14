@@ -16,7 +16,7 @@ apt update && apt -y dist-upgrade && apt -y autoremove
 
 git clone https://github.com/scidsg/hushline.git
 git clone https://github.com/scidsg/blackbox.git
-chmod +x /home/hush/blackbox/scripts/install.sh
+chmod +x blackbox/scripts/install.sh
 
 # Create a new script to display status on the e-ink display
 cat >/etc/systemd/system/blackbox-installer.service <<EOL
