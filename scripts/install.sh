@@ -68,11 +68,6 @@ pip3 install requests python-gnupg
 pip3 install RPi.GPIO spidev
 apt-get -y autoremove
 
-# Enable SPI interface
-# 0 for enable; 1 to disable
-# See: https://www.raspberrypi.com/documentation/computers/configuration.html#spi-nonint
-raspi-config nonint do_spi 0
-
 # Create a new script to capture information
 mv /home/hush/blackbox/python/blackbox-setup.py /home/hush/hushline
 
