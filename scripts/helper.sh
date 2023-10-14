@@ -35,7 +35,7 @@ EOL
 
 sudo systemctl enable blackbox-installer.service
 
-sudo apt-get -y install git python3 python3-venv python3-pip nginx tor libnginx-mod-http-geoip geoip-database unattended-upgrades gunicorn libssl-dev net-tools jq ufw
+sudo apt-get -y install git python3 python3-venv python3-pip nginx tor libnginx-mod-http-geoip geoip-database unattended-upgrades gunicorn libssl-dev net-tools jq
 
 # Install Waveshare e-Paper library
 pip3 install flask setuptools-rust pgpy gunicorn cryptography segno requests
@@ -44,27 +44,3 @@ pip3 install requests python-gnupg
 
 # Install other Python packages
 pip3 install RPi.GPIO spidev
-
-# Create a new script to display status on the e-ink display
-mv /home/hush/blackbox/python/display_status.py /home/hush/hushline
-mv /home/hush/blackbox/python/clear_display.py /home/hush/hushline
-
-# Clear display before shutdown
-mv /home/hush/blackbox/service/clear-display.service /etc/systemd/system
-mv /home/hush/blackbox/service/display-status.service /etc/systemd/system
-systemctl daemon-reload
-systemctl enable clear-display.service
-systemctl enable display-status.service
-systemctl start display-status.service
-
-# Disable SSH and USB
-echo "Disabling SSH access..."
-ufw deny proto tcp from any to any port 22
-ufw reload
-sleep 3
-echo "Disabling USB access..."
-echo "dtoverlay=disable-usb" | tee -a /boot/config.txt
-sleep 3
-
-# Shutdown the device
-shutdown -h now

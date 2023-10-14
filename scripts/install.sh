@@ -68,6 +68,11 @@ pip3 install requests python-gnupg
 pip3 install RPi.GPIO spidev
 apt-get -y autoremove
 
+# Enable SPI interface
+# 0 for enable; 1 to disable
+# See: https://www.raspberrypi.com/documentation/computers/configuration.html#spi-nonint
+raspi-config nonint do_spi 0
+
 # Create a new script to capture information
 mv /home/hush/blackbox/python/blackbox-setup.py /home/hush/hushline
 
@@ -213,6 +218,10 @@ ufw default allow outgoing
 ufw allow 80/tcp
 ufw allow 443/tcp
 
+# Allow SSH (modify as per your requirements)
+ufw allow ssh
+ufw limit ssh/tcp
+
 # Logging
 ufw logging on
 
@@ -221,7 +230,14 @@ echo "y" | ufw enable
 
 echo "UFW configuration complete."
 
-HUSHLINE_PATH="/home/hush/hushline"
+HUSHLINE_PATH=""
+
+# Detect the environment (Raspberry Pi or VPS) based on some characteristic
+if [[ $(uname -n) == *"hushline"* ]]; then
+    HUSHLINE_PATH="/home/hush/hushline"
+else
+    HUSHLINE_PATH="/root/hushline" # Adjusted to /root/hushline for the root user on VPS
+fi
 
 send_email() {
     python3 << END
