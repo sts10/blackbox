@@ -46,10 +46,10 @@ pip3 install requests python-gnupg
 pip3 install RPi.GPIO spidev
 
 # Disable SSH and USB
-echo "Disabling SSH access..."
-ufw deny proto tcp from any to any port 22
-ufw reload
-sleep 3
-echo "Disabling USB access..."
-echo "dtoverlay=disable-usb" | tee -a /boot/config.txt
-sleep 3
+#echo "Disabling SSH access..."
+#ufw deny proto tcp from any to any port 22
+#ufw reload
+#sleep 3
+#echo "Disabling USB access..."
+#echo "dtoverlay=disable-usb" | tee -a /boot/config.txt
+#sleep 3
