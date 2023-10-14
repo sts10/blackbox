@@ -76,7 +76,7 @@ hush@hushline:~ $
 
 Next, run
 ```bash
-curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/glenn-sorrentino/blackbox-bullseye/main/helper.sh | sudo bash
+curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/glenn-sorrentino/blackbox/main/helper.sh | sudo bash
 ```
 
 **Step 11**: Once all programs are installed, and you see `hush@hushline:~ $` again, reboot Pi by running `sudo reboot` or unplugging your Pi and then plugging it in again.

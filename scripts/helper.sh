@@ -15,8 +15,8 @@ raspi-config nonint do_spi 0
 apt update && apt -y dist-upgrade && apt -y autoremove
 
 git clone https://github.com/scidsg/hushline.git
-git clone https://github.com/scidsg/blackbox-bullseye.git
-chmod +x /home/hush/blackbox-bullseye/scripts/install.sh
+git clone https://github.com/scidsg/blackbox.git
+chmod +x /home/hush/blackbox/scripts/install.sh
 
 # Create a new script to display status on the e-ink display
 cat >/etc/systemd/system/blackbox-installer.service <<EOL
@@ -25,7 +25,7 @@ Description=Blackbox Installation Helper
 After=multi-user.target
 
 [Service]
-ExecStart=/home/hush/blackbox-bullseye/scripts/install.sh
+ExecStart=/home/hush/blackbox/scripts/install.sh
 Type=oneshot
 RemainAfterExit=yes
 
