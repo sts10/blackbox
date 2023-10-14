@@ -57,9 +57,20 @@ systemctl enable clear-display.service
 systemctl enable display-status.service
 systemctl start display-status.service
 
-# Disable SSH and USB
-echo "Disabling SSH access..."
+# Configure UFW (Uncomplicated Firewall)
+
+echo "Configuring UFW..."
+
+# Default rules
+ufw default deny incoming
+ufw default allow outgoing
+ufw allow 80/tcp
+ufw allow 443/tcp
 ufw deny proto tcp from any to any port 22
+
+# Logging
+ufw logging on
+
 echo "y" | ufw enable
 sleep 3
 echo "Disabling USB access..."

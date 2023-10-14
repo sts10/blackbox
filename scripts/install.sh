@@ -203,24 +203,6 @@ mv /home/hush/blackbox/config/jail.local /etc/fail2ban
 
 systemctl restart fail2ban
 
-# Configure UFW (Uncomplicated Firewall)
-
-echo "Configuring UFW..."
-
-# Default rules
-ufw default deny incoming
-ufw default allow outgoing
-ufw allow 80/tcp
-ufw allow 443/tcp
-
-# Logging
-ufw logging on
-
-# Reload UFW
-ufw reload
-
-echo "UFW configuration complete."
-
 HUSHLINE_PATH="/home/hush/hushline"
 
 send_email() {
