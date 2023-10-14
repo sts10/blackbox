@@ -21,20 +21,17 @@ pip3 install RPi.GPIO spidev
 apt-get -y autoremove
 
 # Enable SPI interface
-if ! grep -q "dtparam=spi=on" /boot/config.txt; then
-    echo "dtparam=spi=on" | tee -a /boot/config.txt
-    echo "SPI interface enabled."
-else
-    echo "SPI interface is already enabled."
-fi
+# 0 for enable; 1 to disable
+# See: https://www.raspberrypi.com/documentation/computers/configuration.html#spi-nonint
+raspi-config nonint do_spi 0
 
 # Create a new script to display status on the e-ink display
-mv /home/hush/blackbox-bullseye/display_status.py /home/hush/hushline
-mv /home/hush/blackbox-bullseye/clear_display.py /home/hush/hushline
+mv /home/hush/blackbox/display_status.py /home/hush/hushline
+mv /home/hush/blackbox/clear_display.py /home/hush/hushline
 
 # Clear display before shutdown
-mv /home/hush/blackbox-bullseye/clear-display.service /etc/systemd/system
-mv /home/hush/blackbox-bullseye/display-status.service /etc/systemd/system
+mv /home/hush/blackbox/clear-display.service /etc/systemd/system
+mv /home/hush/blackbox/display-status.service /etc/systemd/system
 systemctl daemon-reload
 systemctl enable clear-display.service
 systemctl enable display-status.service
