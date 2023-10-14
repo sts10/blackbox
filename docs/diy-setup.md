@@ -20,7 +20,7 @@ You'll also need a separate computer which you'll use to decrypt and view Hush L
 **Step 1**: Download Raspberry Pi Imager from [https://www.raspberrypi.com/software/](https://www.raspberrypi.com/software/)
 
 **Step 2**: Insert microSD and prepare to flash Raspberry Pi OS.
-* Choose OS > Raspberry Pi OS (other) > Raspberry Pi OS (64-Bit).
+* Choose OS > Raspberry Pi OS (other) > **Legacy Raspberry Pi OS (64-Bit) Bullseye**.
 * Select the location of your microSD card.
 * BEFORE you click "Write", click the gear button in the corner.
 Enter these settings:
@@ -74,7 +74,7 @@ hush@hushline:~ $
 
 **Step 10**:
 
-Next, if your e-ink display is `Rev2.1`, run:
+Next, if you're e-ink display is `Rev2.1`, run
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/scidsg/blackbox/main/helper.sh | sudo bash -s 1
 ```
