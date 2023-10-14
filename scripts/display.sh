@@ -20,18 +20,6 @@ pip3 install requests python-gnupg
 pip3 install RPi.GPIO spidev
 apt-get -y autoremove
 
-# Create a new script to display status on the e-ink display
-mv /home/hush/blackbox/python/display_status.py /home/hush/hushline
-mv /home/hush/blackbox/python/clear_display.py /home/hush/hushline
-
-# Clear display before shutdown
-mv /home/hush/blackbox/service/clear-display.service /etc/systemd/system
-mv /home/hush/blackbox/service/display-status.service /etc/systemd/system
-systemctl daemon-reload
-systemctl enable clear-display.service
-systemctl enable display-status.service
-systemctl start display-status.service
-
 # Download splash screen image
 cd /home/hush/hushline
 wget https://raw.githubusercontent.com/scidsg/hushline-assets/main/images/splash.png

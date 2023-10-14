@@ -45,6 +45,18 @@ pip3 install requests python-gnupg
 # Install other Python packages
 pip3 install RPi.GPIO spidev
 
+# Create a new script to display status on the e-ink display
+mv /home/hush/blackbox/python/display_status.py /home/hush/hushline
+mv /home/hush/blackbox/python/clear_display.py /home/hush/hushline
+
+# Clear display before shutdown
+mv /home/hush/blackbox/service/clear-display.service /etc/systemd/system
+mv /home/hush/blackbox/service/display-status.service /etc/systemd/system
+systemctl daemon-reload
+systemctl enable clear-display.service
+systemctl enable display-status.service
+systemctl start display-status.service
+
 # Disable SSH and USB
 echo "Disabling SSH access..."
 ufw deny proto tcp from any to any port 22
@@ -53,3 +65,6 @@ sleep 3
 echo "Disabling USB access..."
 echo "dtoverlay=disable-usb" | tee -a /boot/config.txt
 sleep 3
+
+# Shutdown the device
+shutdown -h now

@@ -213,10 +213,6 @@ ufw default allow outgoing
 ufw allow 80/tcp
 ufw allow 443/tcp
 
-# Allow SSH (modify as per your requirements)
-ufw allow ssh
-ufw limit ssh/tcp
-
 # Logging
 ufw logging on
 
