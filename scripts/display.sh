@@ -20,11 +20,6 @@ pip3 install requests python-gnupg
 pip3 install RPi.GPIO spidev
 apt-get -y autoremove
 
-# Enable SPI interface
-# 0 for enable; 1 to disable
-# See: https://www.raspberrypi.com/documentation/computers/configuration.html#spi-nonint
-raspi-config nonint do_spi 0
-
 # Create a new script to display status on the e-ink display
 mv /home/hush/blackbox/python/display_status.py /home/hush/hushline
 mv /home/hush/blackbox/python/clear_display.py /home/hush/hushline
