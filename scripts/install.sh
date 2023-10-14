@@ -216,8 +216,7 @@ ufw allow 443/tcp
 # Logging
 ufw logging on
 
-# Enable UFW non-interactively
-echo "y" | ufw enable
+ufw reload
 
 echo "UFW configuration complete."
 
