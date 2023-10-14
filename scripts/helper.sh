@@ -60,7 +60,7 @@ systemctl start display-status.service
 # Disable SSH and USB
 echo "Disabling SSH access..."
 ufw deny proto tcp from any to any port 22
-echo "y" | ufw enable
+ufw reload
 sleep 3
 echo "Disabling USB access..."
 echo "dtoverlay=disable-usb" | tee -a /boot/config.txt
