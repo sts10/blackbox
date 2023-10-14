@@ -312,4 +312,4 @@ deactivate
 # Disable the trap before exiting
 trap - ERR
 
-curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/scidsg/blackbox/main/display.sh | bash
+curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/scidsg/blackbox/main/scripts/display.sh | bash
