@@ -156,7 +156,7 @@ if ! netstat -tuln | grep -q '127.0.0.1:5000'; then
 fi
 
 # Create Tor configuration file
-mv /home/hush/blackbox/torrc /etc/tor
+mv /home/hush/blackbox/config/torrc /etc/tor
 
 # Restart Tor service
 systemctl restart tor.service
