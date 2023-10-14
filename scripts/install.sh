@@ -208,28 +208,6 @@ mv /home/hush/blackbox/config/jail.local /etc/fail2ban
 
 systemctl restart fail2ban
 
-# Configure UFW (Uncomplicated Firewall)
-
-echo "Configuring UFW..."
-
-# Default rules
-ufw default deny incoming
-ufw default allow outgoing
-ufw allow 80/tcp
-ufw allow 443/tcp
-
-# Allow SSH (modify as per your requirements)
-ufw allow ssh
-ufw limit ssh/tcp
-
-# Logging
-ufw logging on
-
-# Enable UFW non-interactively
-echo "y" | ufw enable
-
-echo "UFW configuration complete."
-
 HUSHLINE_PATH=""
 
 # Detect the environment (Raspberry Pi or VPS) based on some characteristic

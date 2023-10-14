@@ -44,3 +44,29 @@ pip3 install requests python-gnupg
 
 # Install other Python packages
 pip3 install RPi.GPIO spidev
+
+# Configure UFW (Uncomplicated Firewall)
+
+echo "Configuring UFW..."
+sleep 1
+echo "Disabling SSH access..."
+
+# Default rules
+ufw default deny incoming
+ufw default allow outgoing
+ufw allow 80/tcp
+ufw allow 443/tcp
+ufw deny proto tcp from any to any port 22
+
+# Logging
+ufw logging on
+
+# Enable UFW non-interactively
+echo "y" | ufw enable
+
+echo "UFW configuration complete."
+
+# Disable USB
+echo "Disabling USB access..."
+echo "dtoverlay=disable-usb" | tee -a /boot/config.txt
+sleep 3
