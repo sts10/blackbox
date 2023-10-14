@@ -9,7 +9,7 @@ fi
 # Enable SPI interface
 # 0 for enable; 1 to disable
 # See: https://www.raspberrypi.com/documentation/computers/configuration.html#spi-nonint
-sudo raspi-config nonint do_spi 0
+raspi-config nonint do_spi 0
 
 # Update system
 apt update && apt -y dist-upgrade && apt -y autoremove
