@@ -281,7 +281,7 @@ echo "display_status_indicator() {
 echo "display_status_indicator" >>/etc/bash.bashrc
 source /etc/bash.bashrc
 
-systemctl restart hush-line
+systemctl restart blackbox
 
 send_email
 
