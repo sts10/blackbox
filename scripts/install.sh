@@ -122,7 +122,7 @@ rm /etc/nginx/sites-available/hushline-setup.nginx
 rm /etc/nginx/sites-enabled/hushline-setup.nginx
 
 # Create a systemd service
-cat >/etc/systemd/system/hush-line.service <<EOL
+cat >/etc/systemd/system/blackbox.service <<EOL
 [Unit]
 Description=Hush Line Web App
 After=network.target
@@ -141,12 +141,12 @@ WantedBy=multi-user.target
 EOL
 
 # Make service file read-only and remove temp file
-chmod 444 /etc/systemd/system/hush-line.service
+chmod 444 /etc/systemd/system/blackbox.service
 rm /tmp/setup_config.json
 
 systemctl daemon-reload
-systemctl enable hush-line.service
-systemctl start hush-line.service
+systemctl enable blackbox.service
+systemctl start blackbox.service
 
 # Check if the application is running and listening on the expected address and port
 sleep 5
@@ -180,13 +180,68 @@ nginx -t && systemctl restart nginx || error_exit
 
 # System status indicator
 display_status_indicator() {
-    local status="$(systemctl is-active hush-line.service)"
+    local status="$(systemctl is-active blackbox.service)"
     if [ "$status" = "active" ]; then
         printf "\n\033[32m●\033[0m Hush Line is running\n$ONION_ADDRESS\n\n"
     else
         printf "\n\033[31m●\033[0m Hush Line is not running\n\n"
     fi
 }
+
+# Move Blackbox HTML & CSS
+mv /home/hush/hushline/templates/index.html /home/hush/hushline/templates/index.html.old
+mv /home/hush/blackbox/templates/index.html /home/hush/hushline/templates
+
+mv /home/hush/hushline/static/style.css /home/hush/hushline/static/style.css.old
+mv /home/hush/blackbox/static/style.css /home/hush/hushline/static
+
+# Create Info Page
+cat >/home/hush/hushline/templates/info.html <<EOL
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="author" content="Science & Design, Inc.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A reasonably private and secure personal tip line.">
+    <meta name="theme-color" content="#7D25C1">
+
+    <title>Hush Line Info</title>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}" sizes="32x32">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/favicon-16x16.png') }}" sizes="16x16">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/android-chrome-192x192.png') }}" sizes="192x192">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/android-chrome-512x512.png') }}" sizes="512x512">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon/favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="info">
+    <header>
+        <div class="wrapper">
+            <h1>B14CKB0X</h1>
+            <a href="https://en.wikipedia.org/wiki/Special:Random" class="btn" rel="noopener noreferrer">Close App</a>
+        </div>
+    </header>
+    <section>
+        <div class="wrapper">
+            <h2>👋<br>Welcome to Hush Line</h2>
+            <p>Hush Line is an anonymous tip line. You should use it when you have information you think shows evidence of wrongdoing, including:</p>
+            <ul>
+                <li>a violation of law, rule, or regulation,</li>
+                <li>gross mismanagement,</li>
+                <li>a gross waste of funds,</li>
+                <li>abuse of authority, or</li>
+                <li>a substantial danger to public health or safety.</li>
+            </ul>
+            <p>To use Hush Line, first, <a href="https://www.torproject.org/download/" target="_blank">download Tor Browser</a>, then use it to visit: <pre>$ONION_ADDRESS</pre></p>
+        </div>
+    </section>
+    <script src="{{ url_for('static', filename='jquery-min.js') }}"></script>
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>
+EOL
 
 # Configure Unattended Upgrades
 mv /home/hush/blackbox/config/50unattended-upgrades /etc/apt/apt.conf.d
@@ -270,7 +325,7 @@ Have feedback? Send us an email at hushline@scidsg.org."
 
 # Display system status on login
 echo "display_status_indicator() {
-    local status=\"\$(systemctl is-active hush-line.service)\"
+    local status=\"\$(systemctl is-active blackbox.service)\"
     if [ \"\$status\" = \"active\" ]; then
         printf \"\n\033[32m●\033[0m Hush Line is running\nhttp://$ONION_ADDRESS\n\n\"
     else
@@ -281,7 +336,7 @@ echo "display_status_indicator() {
 echo "display_status_indicator" >>/etc/bash.bashrc
 source /etc/bash.bashrc
 
-systemctl restart hush-line
+systemctl restart blackbox
 
 send_email
 
