@@ -131,6 +131,8 @@ header .wrapper {
 	font-size: .875rem;
 	color: #f2f2f2;
 	padding: 1rem 0;
+	word-wrap: break-word;
+  white-space: normal;
 }
 
 .setupBody p:first-of-type {
@@ -176,7 +178,7 @@ form.setup-form button {
 .setup-form input:focus,
 textarea:focus,
 a:focus {
-	 outline: 2px solid rgba(255,255,255,.5);
+	 outline: 2px solid rgba(255,255,255,.9);
 }
 
 .emoji {
@@ -368,6 +370,9 @@ footer p {
 		position: initial;
 	}
 
+	body.info h2 {
+		font-size: 2.5rem;
+	}
 }
 
 @media only screen and (max-width: 480px) {
@@ -382,7 +387,14 @@ footer p {
 
 	#pgp-owner-info {
 		margin-bottom: 1rem;
+	}
 
+	body.info {
+		padding: 6.5rem 0 5rem 0;
+	}
+
+	body.info h2 {
+		font-size: 2rem;
 	}
 }
 
