@@ -16,7 +16,7 @@ echo "
 ██████  ███████ ██   ██  ██████ ██   ██ ██████   ██████  ██   ██ 
 
 The physical product for Hush Line.
-https://hushline
+https://hushline.app
 "
 sleep 3
 
