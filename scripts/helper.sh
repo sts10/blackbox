@@ -6,9 +6,21 @@ if [[ $EUID -ne 0 ]]; then
   exec sudo /bin/bash "$0" "$@"
 fi
 
+# Weclome
+
+echo "
+██████  ██       █████   ██████ ██   ██ ██████   ██████  ██   ██ 
+██   ██ ██      ██   ██ ██      ██  ██  ██   ██ ██    ██  ██ ██  
+██████  ██      ███████ ██      █████   ██████  ██    ██   ███   
+██   ██ ██      ██   ██ ██      ██  ██  ██   ██ ██    ██  ██ ██  
+██████  ███████ ██   ██  ██████ ██   ██ ██████   ██████  ██   ██ 
+
+The physical product for Hush Line.
+https://hushline
+"
+sleep 3
+
 # Enable SPI interface
-# 0 for enable; 1 to disable
-# See: https://www.raspberrypi.com/documentation/computers/configuration.html#spi-nonint
 raspi-config nonint do_spi 0
 
 # Update system
@@ -35,7 +47,7 @@ EOL
 
 sudo systemctl enable blackbox-installer.service
 
-sudo apt-get -y install git python3 python3-venv python3-pip nginx tor libnginx-mod-http-geoip geoip-database unattended-upgrades gunicorn libssl-dev net-tools jq
+sudo apt-get -y install git python3 python3-venv python3-pip nginx tor libnginx-mod-http-geoip geoip-database unattended-upgrades gunicorn libssl-dev net-tools jq ufw
 
 # Install Waveshare e-Paper library
 pip3 install flask setuptools-rust pgpy gunicorn cryptography segno requests
@@ -44,3 +56,28 @@ pip3 install requests python-gnupg
 
 # Install other Python packages
 pip3 install RPi.GPIO spidev
+
+# Configure UFW (Uncomplicated Firewall)
+echo "Configuring UFW..."
+
+# Default rules
+ufw default deny incoming
+ufw default allow outgoing
+ufw allow 80/tcp
+ufw allow 443/tcp
+
+echo "Disabling SSH access..."
+ufw deny proto tcp from any to any port 22
+
+# Logging
+ufw logging on
+
+# Enable UFW non-interactively
+echo "y" | ufw enable
+
+echo "UFW configuration complete."
+
+# Disable USB
+echo "Disabling USB access..."
+echo "dtoverlay=disable-usb" | tee -a /boot/config.txt
+sleep 3

@@ -156,7 +156,7 @@ if ! netstat -tuln | grep -q '127.0.0.1:5000'; then
 fi
 
 # Create Tor configuration file
-mv /home/hush/blackbox/torrc /etc/tor
+mv /home/hush/blackbox/config/torrc /etc/tor
 
 # Restart Tor service
 systemctl restart tor.service
@@ -207,28 +207,6 @@ cp /etc/fail2ban/jail.{conf,local}
 mv /home/hush/blackbox/config/jail.local /etc/fail2ban
 
 systemctl restart fail2ban
-
-# Configure UFW (Uncomplicated Firewall)
-
-echo "Configuring UFW..."
-
-# Default rules
-ufw default deny incoming
-ufw default allow outgoing
-ufw allow 80/tcp
-ufw allow 443/tcp
-
-# Allow SSH (modify as per your requirements)
-ufw allow ssh
-ufw limit ssh/tcp
-
-# Logging
-ufw logging on
-
-# Enable UFW non-interactively
-echo "y" | ufw enable
-
-echo "UFW configuration complete."
 
 HUSHLINE_PATH=""
 
