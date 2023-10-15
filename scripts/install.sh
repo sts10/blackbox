@@ -261,14 +261,7 @@ mv /home/hush/blackbox/config/jail.local /etc/fail2ban
 
 systemctl restart fail2ban
 
-HUSHLINE_PATH=""
-
-# Detect the environment (Raspberry Pi or VPS) based on some characteristic
-if [[ $(uname -n) == *"hushline"* ]]; then
-    HUSHLINE_PATH="/home/hush/hushline"
-else
-    HUSHLINE_PATH="/root/hushline" # Adjusted to /root/hushline for the root user on VPS
-fi
+HUSHLINE_PATH="/home/hush/hushline"
 
 send_email() {
     python3 << END
