@@ -47,7 +47,21 @@
         <script>
         // Attempt to help the user by automatically filling in gmail's default smtp info 
         // if user enters @gmail.com into the email field
+        // First, add a few listeners to the email text field.
         document.getElementsByName("email")[0].addEventListener("change", (event) => {
+            enterGmailCommonSmtpInfo();
+        });
+        document.getElementsByName("email")[0].addEventListener("paste", (event) => {
+            console.log("Paste triggered");
+            enterGmailCommonSmtpInfo();
+        });
+        document.getElementsByName("email")[0].addEventListener("keyup", (event) => {
+            console.log("Keyup triggered");
+            enterGmailCommonSmtpInfo();
+        });
+
+        // Auto-fill common GMail SMTP info into form
+        function enterGmailCommonSmtpInfo() {
             if (event.isComposing || event.keyCode === 229) {
                 return;
             }
@@ -59,7 +73,7 @@
                     document.getElementsByName("smtp_server")[0].value = "smtp.gmail.com";
                 }
             }
-        });
+        }
         </script>
     </body>
 </html>
