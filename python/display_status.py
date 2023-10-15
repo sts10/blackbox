@@ -12,7 +12,6 @@ from PIL import ImageOps
 
 print(Image.__version__)
 
-
 def display_splash_screen(epd, image_path, display_time):
     print(f"Displaying splash screen: {image_path}")
     image = Image.open(image_path).convert("L")
@@ -31,22 +30,18 @@ def display_splash_screen(epd, image_path, display_time):
     time.sleep(display_time)
     epd.init()
 
-
-def get_onion_address():
-    with open("/var/lib/tor/hidden_service/hostname", "r") as f:
-        return f.read().strip()
-
+def get_local_address():
+    return "blackbox.local/info"
 
 def get_service_status():
-    status = os.popen("systemctl is-active hush-line.service").read().strip()
+    status = os.popen("systemctl is-active blackbox.service").read().strip()
     if status == "active":
         return "✔ Blackbox is running"
     else:
         return "⨯ Blackbox is not running"
 
-
-def display_status(epd, status, onion_address, name, email, key_id, expires):
-    print(f"Displaying status: {status}, Onion address: {onion_address}")
+def display_status(epd, status, local_address, name, email, key_id, expires):
+    print(f"Displaying status: {status}, Local address: {local_address}")
     image = Image.new("1", (epd.height, epd.width), 255)
     draw = ImageDraw.Draw(image)
 
@@ -63,7 +58,7 @@ def display_status(epd, status, onion_address, name, email, key_id, expires):
         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 11
     )
     instruction_text = (
-        "Scan the QR code and open the link in Tor Browser to send a private message:"
+        "From the local wifi network, scan the QR code to learn about Blackbox:"
     )
     y_pos_instruction = y_pos_status + font_status.getbbox(status)[3] + 7
     max_width = epd.height - 20
@@ -86,7 +81,7 @@ def display_status(epd, status, onion_address, name, email, key_id, expires):
         box_size=3,
         border=2,
     )
-    qr.add_data(f"http://{onion_address}")
+    qr.add_data(f"http://{local_address}")
     qr.make(fit=True)
 
     qr_img = qr.make_image(fill_color="black", back_color="white")
@@ -211,10 +206,10 @@ def main():
         while True:
             status = get_service_status()
             print(f"Service status: {status}")
-            onion_address = get_onion_address()
-            print(f"Onion address: {onion_address}")
+            local_address = get_local_address()
+            print(f"Local address: {local_address}")
             name, email, key_id, expires = get_pgp_owner_info(pgp_owner_info_url)
-            display_status(epd, status, onion_address, name, email, key_id, expires)
+            display_status(epd, status, local_address, name, email, key_id, expires)
             time.sleep(300)
     except KeyboardInterrupt:
         clear_screen(epd)
