@@ -32,10 +32,8 @@ def display_splash_screen(epd, image_path, display_time):
     epd.init()
 
 
-def get_onion_address():
-    with open("/var/lib/tor/hidden_service/hostname", "r") as f:
-        return f.read().strip()
-
+def get_local_address():
+    return "hushline.local/info"
 
 def get_service_status():
     status = os.popen("systemctl is-active hush-line.service").read().strip()
@@ -46,7 +44,7 @@ def get_service_status():
 
 
 def display_status(epd, status, onion_address, name, email, key_id, expires):
-    print(f"Displaying status: {status}, Onion address: {onion_address}")
+    print(f"Displaying status: {status}, Local address: {local_address}")
     image = Image.new("1", (epd.height, epd.width), 255)
     draw = ImageDraw.Draw(image)
 
@@ -86,7 +84,7 @@ def display_status(epd, status, onion_address, name, email, key_id, expires):
         box_size=3,
         border=2,
     )
-    qr.add_data(f"http://{onion_address}")
+    qr.add_data(f"http://{local_address}")
     qr.make(fit=True)
 
     qr_img = qr.make_image(fill_color="black", back_color="white")
@@ -211,8 +209,8 @@ def main():
         while True:
             status = get_service_status()
             print(f"Service status: {status}")
-            onion_address = get_onion_address()
-            print(f"Onion address: {onion_address}")
+            local_address = get_local_address()
+            print(f"Local address: {local_address}")
             name, email, key_id, expires = get_pgp_owner_info(pgp_owner_info_url)
             display_status(epd, status, onion_address, name, email, key_id, expires)
             time.sleep(300)

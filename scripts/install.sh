@@ -122,7 +122,7 @@ rm /etc/nginx/sites-available/hushline-setup.nginx
 rm /etc/nginx/sites-enabled/hushline-setup.nginx
 
 # Create a systemd service
-cat >/etc/systemd/system/hush-line.service <<EOL
+cat >/etc/systemd/system/blackbox.service <<EOL
 [Unit]
 Description=Hush Line Web App
 After=network.target
@@ -141,12 +141,12 @@ WantedBy=multi-user.target
 EOL
 
 # Make service file read-only and remove temp file
-chmod 444 /etc/systemd/system/hush-line.service
+chmod 444 /etc/systemd/system/blackbox.service
 rm /tmp/setup_config.json
 
 systemctl daemon-reload
-systemctl enable hush-line.service
-systemctl start hush-line.service
+systemctl enable blackbox.service
+systemctl start blackbox.service
 
 # Check if the application is running and listening on the expected address and port
 sleep 5
@@ -180,7 +180,7 @@ nginx -t && systemctl restart nginx || error_exit
 
 # System status indicator
 display_status_indicator() {
-    local status="$(systemctl is-active hush-line.service)"
+    local status="$(systemctl is-active blackbox.service)"
     if [ "$status" = "active" ]; then
         printf "\n\033[32m●\033[0m Hush Line is running\n$ONION_ADDRESS\n\n"
     else
@@ -270,7 +270,7 @@ Have feedback? Send us an email at hushline@scidsg.org."
 
 # Display system status on login
 echo "display_status_indicator() {
-    local status=\"\$(systemctl is-active hush-line.service)\"
+    local status=\"\$(systemctl is-active blackbox.service)\"
     if [ \"\$status\" = \"active\" ]; then
         printf \"\n\033[32m●\033[0m Hush Line is running\nhttp://$ONION_ADDRESS\n\n\"
     else

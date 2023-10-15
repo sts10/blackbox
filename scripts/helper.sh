@@ -67,7 +67,7 @@ ufw allow 80/tcp
 ufw allow 443/tcp
 
 echo "Disabling SSH access..."
-ufw deny proto tcp from any to any port 22
+# ufw deny proto tcp from any to any port 22
 
 # Logging
 ufw logging on
