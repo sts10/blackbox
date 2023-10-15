@@ -34,14 +34,13 @@ def get_local_address():
     return "hushline.local/info"
 
 def get_service_status():
-    status = os.popen("systemctl is-active hush-line.service").read().strip()
+    status = os.popen("systemctl is-active blackbox.service").read().strip()
     if status == "active":
         return "✔ Blackbox is running"
     else:
         return "⨯ Blackbox is not running"
 
-
-def display_status(epd, status, onion_address, name, email, key_id, expires):
+def display_status(epd, status, local_address, name, email, key_id, expires):
     print(f"Displaying status: {status}, Local address: {local_address}")
     image = Image.new("1", (epd.height, epd.width), 255)
     draw = ImageDraw.Draw(image)
@@ -59,7 +58,7 @@ def display_status(epd, status, onion_address, name, email, key_id, expires):
         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 11
     )
     instruction_text = (
-        "Scan the QR code and open the link in Tor Browser to send a private message:"
+        "From the local wifi network, scan the QR code to learn about Hush Line:"
     )
     y_pos_instruction = y_pos_status + font_status.getbbox(status)[3] + 7
     max_width = epd.height - 20
@@ -210,7 +209,7 @@ def main():
             local_address = get_local_address()
             print(f"Local address: {local_address}")
             name, email, key_id, expires = get_pgp_owner_info(pgp_owner_info_url)
-            display_status(epd, status, onion_address, name, email, key_id, expires)
+            display_status(epd, status, local_address, name, email, key_id, expires)
             time.sleep(300)
     except KeyboardInterrupt:
         clear_screen(epd)
