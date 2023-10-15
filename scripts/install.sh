@@ -32,14 +32,14 @@ export CAROOT="/home/hush/.local/share/mkcert"
 mkdir -p "$CAROOT"  # Ensure the directory exists
 mkcert -install
 
-# Create a certificate for hushline.local
-echo "Creating certificate for hushline.local..."
-mkcert hushline.local
+# Create a certificate for blackbox.local
+echo "Creating certificate for blackbox.local..."
+mkcert blackbox.local
 
 # Move and link the certificates to Nginx's directory (optional, modify as needed)
-mv hushline.local.pem /etc/nginx/
-mv hushline.local-key.pem /etc/nginx/
-echo "Certificate and key for hushline.local have been created and moved to /etc/nginx/."
+mv blackbox.local.pem /etc/nginx/
+mv blackbox.local-key.pem /etc/nginx/
+echo "Certificate and key for blackbox.local have been created and moved to /etc/nginx/."
 
 # Create a virtual environment and install dependencies
 cd /home/hush/hushline
@@ -69,8 +69,6 @@ pip3 install RPi.GPIO spidev
 apt-get -y autoremove
 
 # Enable SPI interface
-# 0 for enable; 1 to disable
-# See: https://www.raspberrypi.com/documentation/computers/configuration.html#spi-nonint
 raspi-config nonint do_spi 0
 
 # Create a new script to capture information
@@ -102,7 +100,7 @@ sleep 5
 # Display the QR code from the file
 cat /tmp/qr_code.txt
 
-echo "The Flask app for setup is running. Please complete the setup by navigating to https://hushline.local/setup."
+echo "The Flask app for setup is running. Please complete the setup by navigating to https://blackbox.local/setup."
 
 # Wait for user to complete setup form
 while [ ! -f "/tmp/setup_config.json" ]; do
