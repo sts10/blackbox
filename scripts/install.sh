@@ -188,6 +188,13 @@ display_status_indicator() {
     fi
 }
 
+# Move Blackbox HTML & CSS
+mv /home/hush/hushline/templates/index.html /home/hush/hushline/templates/index.html.old
+mv /home/hush/blackbox/templates/index.html /home/hush/hushline/templates
+
+mv /home/hush/hushline/static/style.css /home/hush/hushline/static/style.css.old
+mv /home/hush/blackbox/static/style.css /home/hush/hushline/static
+
 # Create Info Page
 cat >/home/hush/hushline/templates/info.html <<EOL
 <!DOCTYPE html>
@@ -209,24 +216,27 @@ cat >/home/hush/hushline/templates/info.html <<EOL
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon/favicon.ico') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
+<body class="info">
     <header>
         <div class="wrapper">
-            <h1>🤫 Hush Line</h1>
+            <h1>B14CKB0X</h1>
             <a href="https://en.wikipedia.org/wiki/Special:Random" class="btn" rel="noopener noreferrer">Close App</a>
         </div>
     </header>
-    <h1>👋 Welcome to Hush Line</h1>
-    <p>Hush Line is an anonymous tip line. You should use it when you have information you think shows evidence of wrongdoing, including:</p>
-    <ul>
-        <li>a violation of law, rule, or regulation,</li>
-        <li>gross mismanagement,</li>
-        <li>a gross waste of funds,</li>
-        <li>abuse of authority, or</li>
-        <li>a substantial danger to public health or safety.</li>
-    </ul>
-    <p>To use Hush Line, first, <a href="https://www.torproject.org/download/" target="_blank">download Tor Browser</a>, then use it to visit: $ONION_ADDRESS</p>
-
+    <section>
+        <div class="wrapper">
+            <h2>👋<br>Welcome to Hush Line</h2>
+            <p>Hush Line is an anonymous tip line. You should use it when you have information you think shows evidence of wrongdoing, including:</p>
+            <ul>
+                <li>a violation of law, rule, or regulation,</li>
+                <li>gross mismanagement,</li>
+                <li>a gross waste of funds,</li>
+                <li>abuse of authority, or</li>
+                <li>a substantial danger to public health or safety.</li>
+            </ul>
+            <p>To use Hush Line, first, <a href="https://www.torproject.org/download/" target="_blank">download Tor Browser</a>, then use it to visit: <pre>$ONION_ADDRESS</pre></p>
+        </div>
+    </section>
     <script src="{{ url_for('static', filename='jquery-min.js') }}"></script>
     <script src="{{ url_for('static', filename='main.js') }}"></script>
 </body>
