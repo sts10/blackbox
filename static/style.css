@@ -29,8 +29,8 @@
 }
 
 ::selection {
-  background-color: #333;
-  color: white;
+  background-color: #f2f2f2;
+  color: #333;
 }
 
 .destructive {
@@ -128,7 +128,7 @@ header .wrapper {
 
 .info pre {
 	text-align: left;
-	font-size: 1rem;
+	font-size: .875rem;
 	color: #f2f2f2;
 	padding: 1rem 0;
 }
