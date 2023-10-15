@@ -57,7 +57,7 @@ def index():
 
 
 if __name__ == "__main__":
-    qr = segno.make(f"https://hushline.local/setup")
+    qr = segno.make(f"https://blackbox.local/setup")
     with open("/tmp/qr_code.txt", "w") as f:
         qr.terminal(out=f)
     app.run(host="0.0.0.0", port=5001)

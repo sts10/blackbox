@@ -31,7 +31,7 @@ def display_splash_screen(epd, image_path, display_time):
     epd.init()
 
 def get_local_address():
-    return "hushline.local/info"
+    return "blackbox.local/info"
 
 def get_service_status():
     status = os.popen("systemctl is-active blackbox.service").read().strip()
