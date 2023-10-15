@@ -12,7 +12,6 @@ from PIL import ImageOps
 
 print(Image.__version__)
 
-
 def display_splash_screen(epd, image_path, display_time):
     print(f"Displaying splash screen: {image_path}")
     image = Image.open(image_path).convert("L")
@@ -30,7 +29,6 @@ def display_splash_screen(epd, image_path, display_time):
     epd.display(epd.getbuffer(image_bw))
     time.sleep(display_time)
     epd.init()
-
 
 def get_local_address():
     return "hushline.local/info"
