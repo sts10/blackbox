@@ -27,11 +27,7 @@ raspi-config nonint do_spi 0
 apt update && apt -y dist-upgrade && apt -y autoremove
 
 git clone https://github.com/scidsg/hushline.git
-cd hushline && git switch landing-page ##################### REMOVE
-cd .. ##################### REMOVE
 git clone https://github.com/scidsg/blackbox.git
-cd blackbox && git switch local-page ##################### REMOVE
-cd .. ##################### REMOVE
 chmod +x /home/hush/blackbox/scripts/install.sh
 
 # Create a new script to display status on the e-ink display
