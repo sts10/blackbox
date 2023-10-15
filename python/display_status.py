@@ -58,7 +58,7 @@ def display_status(epd, status, local_address, name, email, key_id, expires):
         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 11
     )
     instruction_text = (
-        "From the local wifi network, scan the QR code to learn about Hush Line:"
+        "From the local wifi network, scan the QR code to learn about Blackbox:"
     )
     y_pos_instruction = y_pos_status + font_status.getbbox(status)[3] + 7
     max_width = epd.height - 20
