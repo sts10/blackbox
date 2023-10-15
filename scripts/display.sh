@@ -34,7 +34,7 @@ systemctl start display-status.service
 
 # Download splash screen image
 cd /home/hush/hushline
-wget https://raw.githubusercontent.com/scidsg/hushline-assets/main/images/splash.png
+wget https://raw.githubusercontent.com/scidsg/blackbox/main/img/splash.png
 
 echo "✅ E-ink display configuration complete. Rebooting Blackbox..."
 sleep 3
