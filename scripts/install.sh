@@ -204,7 +204,7 @@ cat >/home/hush/hushline/templates/info.html <<EOL
     <meta name="description" content="A reasonably private and secure personal tip line.">
     <meta name="theme-color" content="#7D25C1">
 
-    <title>Hush Line Info</title>
+    <title>Blackbox Info</title>
 
     <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}" sizes="32x32">
@@ -223,8 +223,8 @@ cat >/home/hush/hushline/templates/info.html <<EOL
     </header>
     <section>
         <div class="wrapper">
-            <h2>👋<br>Welcome to Hush Line</h2>
-            <p>Hush Line is an anonymous tip line. You should use it when you have information you think shows evidence of wrongdoing, including:</p>
+            <h2>👋<br>Welcome to Blackbox</h2>
+            <p>Blackbox is an anonymous tip line. You should use it when you have information you think shows evidence of wrongdoing, including:</p>
             <ul>
                 <li>a violation of law, rule, or regulation,</li>
                 <li>gross mismanagement,</li>
@@ -232,7 +232,7 @@ cat >/home/hush/hushline/templates/info.html <<EOL
                 <li>abuse of authority, or</li>
                 <li>a substantial danger to public health or safety.</li>
             </ul>
-            <p>To use Hush Line, first, <a href="https://www.torproject.org/download/" target="_blank">download Tor Browser</a>, then use it to visit: <pre>$ONION_ADDRESS</pre></p>
+            <p>To use Blackbox, visit <pre>$ONION_ADDRESS</pre> in <a href="https://www.torproject.org/download/" target="_blank">Tor Browser.</a></p>
         </div>
     </section>
     <script src="{{ url_for('static', filename='jquery-min.js') }}"></script>
