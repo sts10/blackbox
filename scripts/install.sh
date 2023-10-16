@@ -232,7 +232,7 @@ cat >/home/hush/hushline/templates/info.html <<EOL
                 <li>abuse of authority, or</li>
                 <li>a substantial danger to public health or safety.</li>
             </ul>
-            <p>To use Blackbox, first, <a href="https://www.torproject.org/download/" target="_blank">download Tor Browser</a>, then use it to visit: <pre>$ONION_ADDRESS</pre></p>
+            <p>To send a Blackbox message, first, <a href="https://www.torproject.org/download/" target="_blank">download Tor Browser</a>, then use it to visit: <pre>$ONION_ADDRESS</pre></p>
         </div>
     </section>
     <script src="{{ url_for('static', filename='jquery-min.js') }}"></script>
