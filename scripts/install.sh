@@ -105,6 +105,8 @@ nohup ./venv/bin/python3 qr-setup.py --host=0.0.0.0 &
 # Launch Flask app for setup
 nohup ./venv/bin/python3 blackbox-setup.py --host=0.0.0.0 &
 
+sleep 5
+
 cat /tmp/qr_code.txt
 
 echo "The Flask app for setup is running. Please complete the setup by navigating to https://blackbox.local/setup."
