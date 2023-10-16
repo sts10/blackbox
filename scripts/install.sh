@@ -77,14 +77,11 @@ pip3 install requests python-gnupg
 pip3 install RPi.GPIO spidev
 apt-get -y autoremove
 
-# Enable SPI interface
-raspi-config nonint do_spi 0
-
 # Create a new script to capture information
-mv /home/hush/blackbox/python/blackbox-setup.py /home/hush/hushline
+cp /home/hush/blackbox/python/blackbox-setup.py /home/hush/hushline
 
 # Configure Nginx
-mv /home/hush/blackbox/nginx/hushline-setup.nginx /etc/nginx/sites-available
+cp /home/hush/blackbox/nginx/hushline-setup.nginx /etc/nginx/sites-available
 
 ln -sf /etc/nginx/sites-available/hushline-setup.nginx /etc/nginx/sites-enabled/
 nginx -t && systemctl restart nginx
@@ -95,23 +92,31 @@ fi
 ln -sf /etc/nginx/sites-available/hushline-setup.nginx /etc/nginx/sites-enabled/
 nginx -t && systemctl restart nginx || error_exit
 
-# Create a new script to display status on the e-ink display
-mv /home/hush/blackbox/python/qr-setup.py /home/hush/hushline
-mv /home/hush/blackbox/templates/setup.html /home/hush/hushline/templates
+# Move script to display status on the e-ink display
+cp /home/hush/blackbox/python/qr-setup.py /home/hush/hushline
+cp /home/hush/blackbox/templates/setup.html /home/hush/hushline/templates
 
 # Move new styles
 mv /home/hush/hushline/static/style.css /home/hush/hushline/static/style.css.old
-mv /home/hush/blackbox/static/style.css /home/hush/hushline/static
+cp /home/hush/blackbox/static/style.css /home/hush/hushline/static
 
 nohup ./venv/bin/python3 qr-setup.py --host=0.0.0.0 &
 
 # Launch Flask app for setup
 nohup ./venv/bin/python3 blackbox-setup.py --host=0.0.0.0 &
 
-sleep 5
+for _ in {1..60}; do  # try for up to 60 seconds
+    if [[ -f /tmp/qr_code.txt ]]; then
+        cat /tmp/qr_code.txt
+        break
+    fi
+    sleep 1
+done
 
-# Display the QR code from the file
-cat /tmp/qr_code.txt
+if [[ ! -f /tmp/qr_code.txt ]]; then
+    echo "Failed to generate QR code within the expected time."
+    error_exit
+fi
 
 echo "The Flask app for setup is running. Please complete the setup by navigating to https://blackbox.local/setup."
 
@@ -177,8 +182,8 @@ sleep 10
 ONION_ADDRESS=$(cat /var/lib/tor/hidden_service/hostname)
 
 # Configure Nginx
-mv /home/hush/blackbox/nginx/hush-line.nginx /etc/nginx/sites-available
-mv /home/hush/blackbox/nginx/nginx.conf /etc/nginx
+cp /home/hush/blackbox/nginx/hush-line.nginx /etc/nginx/sites-available
+cp /home/hush/blackbox/nginx/nginx.conf /etc/nginx
 
 ln -sf /etc/nginx/sites-available/hush-line.nginx /etc/nginx/sites-enabled/
 nginx -t && systemctl restart nginx
@@ -199,12 +204,9 @@ display_status_indicator() {
     fi
 }
 
-# Move Blackbox HTML & CSS
+# Move Blackbox HTML
 mv /home/hush/hushline/templates/index.html /home/hush/hushline/templates/index.html.old
-mv /home/hush/blackbox/templates/index.html /home/hush/hushline/templates
-
-mv /home/hush/hushline/static/style.css /home/hush/hushline/static/style.css.old
-mv /home/hush/blackbox/static/style.css /home/hush/hushline/static
+cp /home/hush/blackbox/templates/index.html /home/hush/hushline/templates
 
 # Create Info Page
 cat >/home/hush/hushline/templates/info.html <<EOL
@@ -255,8 +257,8 @@ cat >/home/hush/hushline/templates/info.html <<EOL
 EOL
 
 # Configure Unattended Upgrades
-mv /home/hush/blackbox/config/50unattended-upgrades /etc/apt/apt.conf.d
-mv /home/hush/blackbox/config/20auto-upgrades /etc/apt/apt.conf.d
+cp /home/hush/blackbox/config/50unattended-upgrades /etc/apt/apt.conf.d
+cp /home/hush/blackbox/config/20auto-upgrades /etc/apt/apt.conf.d
 
 systemctl restart unattended-upgrades
 
@@ -270,7 +272,7 @@ systemctl start fail2ban
 systemctl enable fail2ban
 cp /etc/fail2ban/jail.{conf,local}
 
-mv /home/hush/blackbox/config/jail.local /etc/fail2ban
+cp /home/hush/blackbox/config/jail.local /etc/fail2ban
 
 systemctl restart fail2ban
 
