@@ -255,7 +255,7 @@ button {
 	height: fit-content;
 	font-family: 'Atkinson Bold', sans-serif;
   letter-spacing: .05rem;
-  color: #7D25C1 !important;
+  color: #7D25C1;
 }
 
 /* Add the @keyframes rule for the spinning animation */
