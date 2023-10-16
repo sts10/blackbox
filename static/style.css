@@ -143,15 +143,11 @@ header .wrapper {
   margin-top: 1.5rem;
 }
 
-.setupBody p:first-of-type {
-	margin-bottom: .5rem;
-	margin-top: .25rem;
-}
-
-.setupBody p:last-of-type {
+.setupBody p {
+	margin-top: 2rem;
 	margin-bottom: 2rem;
-	padding-bottom: 2rem;
 	border-bottom: 1px solid rgba(125,37,193,0.15);
+	max-width: 480px;
 }
 
 form.setup-form {
@@ -159,7 +155,6 @@ form.setup-form {
   flex-direction: column;
   max-width: 480px;
   width: 100%;
-  margin: 0 auto;
 }
 
 form.setup-form button {
@@ -172,10 +167,11 @@ form.setup-form button {
 	padding: .75rem;
   margin-bottom: 1rem;
   border-radius: .25rem;
-  outline: 1px solid rgba(0,0,0,0.1);
+  outline: 1px solid rgba(255,255,255,0.5);
   box-shadow: 0px 4px 12px -4px rgba(0,0,0,0.15);
   border: none;
   font-size: 1rem;
+  background-color: transparent;
 }
 
 .setup-form label {
