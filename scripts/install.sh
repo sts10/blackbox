@@ -99,6 +99,10 @@ nginx -t && systemctl restart nginx || error_exit
 mv /home/hush/blackbox/python/qr-setup.py /home/hush/hushline
 mv /home/hush/blackbox/templates/setup.html /home/hush/hushline/templates
 
+# Move new styles
+mv /home/hush/hushline/static/style.css /home/hush/hushline/static/style.css.old
+mv /home/hush/blackbox/static/style.css /home/hush/hushline/static
+
 nohup ./venv/bin/python3 qr-setup.py --host=0.0.0.0 &
 
 # Launch Flask app for setup
