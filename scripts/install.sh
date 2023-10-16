@@ -44,18 +44,27 @@ echo "Certificate and key for blackbox.local have been created and moved to /etc
 # Restore Git repos
 cd /home/hush/blackbox
 git restore --source=HEAD --staged --worktree -- .
+sleep 2
 git reset HEAD -- .
+sleep 2
 git clean -fd .
+sleep 2
 git config pull.rebase false
+sleep 2
 git pull
+sleep 2
 chmod +x /home/hush/blackbox/scripts/install.sh # Make executable when the device reboots 
 
 # Create a virtual environment and install dependencies
 cd /home/hush/hushline
 git restore --source=HEAD --staged --worktree -- .
+sleep 2
 git reset HEAD -- .
+sleep 2
 git clean -fd .
+sleep 2
 git config pull.rebase false
+sleep 2
 git pull
 
 python3 -m venv venv
