@@ -105,18 +105,7 @@ nohup ./venv/bin/python3 qr-setup.py --host=0.0.0.0 &
 # Launch Flask app for setup
 nohup ./venv/bin/python3 blackbox-setup.py --host=0.0.0.0 &
 
-for _ in {1..60}; do  # try for up to 60 seconds
-    if [[ -f /tmp/qr_code.txt ]]; then
-        cat /tmp/qr_code.txt
-        break
-    fi
-    sleep 1
-done
-
-if [[ ! -f /tmp/qr_code.txt ]]; then
-    echo "Failed to generate QR code within the expected time."
-    error_exit
-fi
+cat /tmp/qr_code.txt
 
 echo "The Flask app for setup is running. Please complete the setup by navigating to https://blackbox.local/setup."
 
