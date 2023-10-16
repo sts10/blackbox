@@ -41,6 +41,15 @@ mv blackbox.local.pem /etc/nginx/
 mv blackbox.local-key.pem /etc/nginx/
 echo "Certificate and key for blackbox.local have been created and moved to /etc/nginx/."
 
+# Restore Git repos
+cd /home/hush/blackbox
+git restore --source=HEAD --staged --worktree -- .
+git reset HEAD -- .
+git clean -fd .
+git config pull.rebase false
+git pull
+chmod +x /home/hush/blackbox/scripts/install.sh # Make executable when the device reboots 
+
 # Create a virtual environment and install dependencies
 cd /home/hush/hushline
 git restore --source=HEAD --staged --worktree -- .
