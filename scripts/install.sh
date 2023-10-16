@@ -232,7 +232,7 @@ cat >/home/hush/hushline/templates/info.html <<EOL
                 <li>abuse of authority, or</li>
                 <li>a substantial danger to public health or safety.</li>
             </ul>
-            <p>To use Blackbox, visit <pre>$ONION_ADDRESS</pre> in <a href="https://www.torproject.org/download/" target="_blank">Tor Browser.</a></p>
+            <p>To use Blackbox, first, <a href="https://www.torproject.org/download/" target="_blank">download Tor Browser</a>, then use it to visit: <pre>$ONION_ADDRESS</pre></p>
         </div>
     </section>
     <script src="{{ url_for('static', filename='jquery-min.js') }}"></script>
@@ -277,7 +277,7 @@ warnings.filterwarnings("ignore", category=CryptographyDeprecationWarning)
 
 def send_notification_email(smtp_server, smtp_port, email, password):
     subject = "🎉 Blackbox Installation Complete"
-    message = "Blackbox has been successfully installed! In a moment, your device will reboot.\n\nYou can visit your tip line when you see \"Blackbox is running\" on your e-Paper display. If you can't immediately connect, don't panic; this is normal, as your device's information sometimes takes a few minutes to publish.\n\nYour Hush Line address is:\nhttp://$ONION_ADDRESS\n\nTo send a message, enter your address into Tor Browser. If you still need to download it, get it from https://torproject.org/download.\n\nHush Line is a free and open-source tool by Science & Design, Inc. Learn more about us at https://scidsg.org.\n\nIf you've found this resource useful, please consider making a donation at https://opencollective.com/scidsg."
+    message = "Blackbox has been successfully installed! In a moment, your device will reboot.\n\nYou can visit your tip line when you see \"Blackbox is running\" on your e-Paper display. If you can't immediately connect, don't panic; this is normal, as your device's information sometimes takes a few minutes to publish.\n\nYour Hush Line address is:\nhttp://$ONION_ADDRESS\n\nTo send a message, enter your address into Tor Browser. To find information about your Hush Line, including tips for when to use it, visit: $ONION_ADDRESS/info. If you still need to download Tor Browser, get it from https://torproject.org/download.\n\nHush Line is a free and open-source tool by Science & Design, Inc. Learn more about us at https://scidsg.org.\n\nIf you've found this resource useful, please consider making a donation at https://opencollective.com/scidsg."
 
     # Load the public key from its path
     key_path = os.path.expanduser('$HUSHLINE_PATH/public_key.asc')  # Use os to expand the path
