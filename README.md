@@ -11,7 +11,7 @@ Blackbox is intended for use when:
 
 ## 🎁 Is Blackbox for sale? 
 
-Yes! Well, soon! We're working on having a special, security-centric cases made - a solid piece of milled alluminum with only the power and ethernet ports exposed. The case is powder coated black with a goregous smoked 5mm plexiglass cover.
+Yes! Well, soon! We're working on having custom, security-centric cases made - a solid piece of milled alluminum with only the power and ethernet ports exposed. The case is powder coated black with a goregous smoked 5mm plexiglass cover.
 
 While we're hard at work getting Blackbox ready for production, you can assemble your own and create one using the script below:
 

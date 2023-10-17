@@ -1,6 +1,4 @@
 <!DOCTYPE html>
-<html>
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -9,7 +7,7 @@
     <meta name="description" content="A reasonably private and secure personal tip line.">
     <meta name="theme-color" content="#7D25C1">
 
-    <title>Hush Line Setup</title>
+    <title>Blackbox Setup</title>
 
     <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}" sizes="32x32">
@@ -22,20 +20,19 @@
 <body class="setupBody">
     <header>
         <div class="wrapper">
-            <h1>⚙️ Hush Line Setup</h1>
+            <h1>⚙️ B14CKB0X Setup</h1>
         </div>
     </header>
-    <p>👋 Hush Line requires an SMTP-enabled email account - Gmail or Riseup, for example - and a PGP key that's been uploaded to a public keyserver.</p>
-    <p>Not sure what to do? That's okay, <a href="https://scidsg.github.io/hushline-docs/book/intro.html" target="_blank" rel="noopener noreferrer">we'll walk you through everything you need to know right here.</a>.</p>
+    <p>For a detailed installation walkthrough see our <a href="https://scidsg.github.io/hushline-docs/book/intro.html" target="_blank" rel="noopener noreferrer">documentation</a>.</p>
     <form class="setup-form" action="/setup" method="post">
         <label for="email">Email</label>
         <input type="email" name="email" required>
-        
-        <label for="smtp_server">SMTP Server</label>
-        <input type="text" name="smtp_server" placeholder="smtp.gmail.com" required>
 
         <label for="password">Password</label>
         <input type="password" name="password" required>
+        
+        <label for="smtp_server">SMTP Server</label>
+        <input type="text" name="smtp_server" placeholder="smtp.gmail.com" required>
 
         <label for="smtp_port">SMTP Port</label>
         <input type="number" name="smtp_port" placeholder="465" required>
@@ -43,8 +40,36 @@
         <label for="pgp_public_key">Public PGP Key</label>
         <textarea name="pgp_public_key" rows="10" cols="50" placeholder="-----BEGIN PGP PUBLIC KEY BLOCK-----" required></textarea>
 
-        
         <button type="submit">Submit</button>
     </form>
+    <script>
+        // Attempt to help the user by automatically filling in gmail's default smtp info 
+        // if user enters @gmail.com into the email field
+        // First, add a few listeners to the email text field.
+        document.getElementsByName("email")[0].addEventListener("change", (event) => {
+            enterGmailCommonSmtpInfo();
+        });
+        document.getElementsByName("email")[0].addEventListener("paste", (event) => {
+            enterGmailCommonSmtpInfo();
+        });
+        document.getElementsByName("email")[0].addEventListener("keyup", (event) => {
+            enterGmailCommonSmtpInfo();
+        });
+
+        // Auto-fill common GMail SMTP info into form
+        function enterGmailCommonSmtpInfo() {
+            if (event.isComposing || event.keyCode === 229) {
+                return;
+            }
+            if (document.getElementsByName("email")[0].value.includes("@gmail.com") == true) {
+                // Only make changes if smtp_port and smtp_server fields are both currently empty 
+                // (we don't want to overwrite a different port or server URL that user has already entered!)
+                if (document.getElementsByName("smtp_port")[0].value == "" && document.getElementsByName("smtp_server")[0].value == "") {
+                    document.getElementsByName("smtp_port")[0].value = "465";
+                    document.getElementsByName("smtp_server")[0].value = "smtp.gmail.com";
+                }
+            }
+        }
+    </script>
 </body>
 </html>

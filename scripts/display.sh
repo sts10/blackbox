@@ -20,18 +20,13 @@ pip3 install requests python-gnupg
 pip3 install RPi.GPIO spidev
 apt-get -y autoremove
 
-# Enable SPI interface
-# 0 for enable; 1 to disable
-# See: https://www.raspberrypi.com/documentation/computers/configuration.html#spi-nonint
-raspi-config nonint do_spi 0
-
 # Create a new script to display status on the e-ink display
-mv /home/hush/blackbox/display_status.py /home/hush/hushline
-mv /home/hush/blackbox/clear_display.py /home/hush/hushline
+mv /home/hush/blackbox/python/display_status.py /home/hush/hushline
+mv /home/hush/blackbox/python/clear_display.py /home/hush/hushline
 
 # Clear display before shutdown
-mv /home/hush/blackbox/clear-display.service /etc/systemd/system
-mv /home/hush/blackbox/display-status.service /etc/systemd/system
+mv /home/hush/blackbox/service/clear-display.service /etc/systemd/system
+mv /home/hush/blackbox/service/display-status.service /etc/systemd/system
 systemctl daemon-reload
 systemctl enable clear-display.service
 systemctl enable display-status.service
@@ -39,21 +34,12 @@ systemctl start display-status.service
 
 # Download splash screen image
 cd /home/hush/hushline
-wget https://raw.githubusercontent.com/scidsg/hushline-assets/main/images/splash.png
+wget https://raw.githubusercontent.com/scidsg/blackbox/main/img/splash.png
 
-echo "✅ E-ink display configuration complete. Rebooting your Raspberry Pi..."
+echo "✅ E-ink display configuration complete. Rebooting Blackbox..."
 sleep 3
 
 systemctl disable blackbox-installer.service
-sleep 3
-
-# Disable SSH and USB
-echo "Disabling SSH access..."
-ufw deny proto tcp from any to any port 22
-ufw reload
-sleep 3
-echo "Disabling USB access..."
-echo "dtoverlay=disable-usb" | tee -a /boot/config.txt
 sleep 3
 
 reboot
