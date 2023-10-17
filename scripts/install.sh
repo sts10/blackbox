@@ -15,6 +15,7 @@ error_exit() {
 # Trap any errors and call error_exit function
 trap error_exit ERR
 
+# Stop anything using necessary ports
 lsof -t -i :5000 | xargs kill -9
 lsof -t -i :5001 | xargs kill -9
 
