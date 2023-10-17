@@ -250,8 +250,11 @@ cat >/home/hush/hushline/templates/info.html <<EOL
 <body class="info">
     <header>
         <div class="wrapper">
-            <h1>B14CKB0X</h1>
-            <a href="https://en.wikipedia.org/wiki/Special:Random" class="btn" rel="noopener noreferrer">Close App</a>
+            <h1><a href="/" target="_blank">B14CKB0X</a></h1>
+            <nav>
+                <li><a href="/info" target="_blank">Info</a></li>
+                <li><a href="https://en.wikipedia.org/wiki/Special:Random" class="btn" rel="noopener noreferrer">Close App</a></li>
+            </nav>
         </div>
     </header>
     <section>
