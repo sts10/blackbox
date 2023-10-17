@@ -15,9 +15,23 @@ error_exit() {
 # Trap any errors and call error_exit function
 trap error_exit ERR
 
+# Function to kill process on a given port
+kill_process_on_port() {
+    local port="$1"
+    local pids
+    pids=$(lsof -t -i :"$port")
+    
+    if [ -z "$pids" ]; then
+        echo "No process found on port $port."
+    else
+        echo "Killing processes on port $port: $pids"
+        echo "$pids" | xargs kill -9
+    fi
+}
+
 # Stop anything using necessary ports
-lsof -t -i :5000 | xargs kill -9
-lsof -t -i :5001 | xargs kill -9
+kill_process_on_port 5000
+kill_process_on_port 5001
 
 # Update and upgrade
 apt update && apt -y dist-upgrade && apt -y autoremove
