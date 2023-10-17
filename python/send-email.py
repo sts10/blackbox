@@ -17,7 +17,6 @@ email_password = sys.argv[4]
 hushline_path = sys.argv[5]
 onion_address = sys.argv[6]
 
-
 def send_installation_complete_email(
     smtp_server, smtp_port, email, password, hushline_path, onion_address
 ):
@@ -55,7 +54,6 @@ def send_installation_complete_email(
         server.quit()
     except Exception as e:
         print(f"Failed to send email: {e}")
-
 
 # Actually send the installation confirmation email
 send_installation_complete_email(
