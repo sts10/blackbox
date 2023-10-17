@@ -42,34 +42,5 @@
 
         <button type="submit">Submit</button>
     </form>
-    <script>
-        // Attempt to help the user by automatically filling in gmail's default smtp info 
-        // if user enters @gmail.com into the email field
-        // First, add a few listeners to the email text field.
-        document.getElementsByName("email")[0].addEventListener("change", (event) => {
-            enterGmailCommonSmtpInfo();
-        });
-        document.getElementsByName("email")[0].addEventListener("paste", (event) => {
-            enterGmailCommonSmtpInfo();
-        });
-        document.getElementsByName("email")[0].addEventListener("keyup", (event) => {
-            enterGmailCommonSmtpInfo();
-        });
-
-        // Auto-fill common GMail SMTP info into form
-        function enterGmailCommonSmtpInfo() {
-            if (event.isComposing || event.keyCode === 229) {
-                return;
-            }
-            if (document.getElementsByName("email")[0].value.includes("@gmail.com") == true) {
-                // Only make changes if smtp_port and smtp_server fields are both currently empty 
-                // (we don't want to overwrite a different port or server URL that user has already entered!)
-                if (document.getElementsByName("smtp_port")[0].value == "" && document.getElementsByName("smtp_server")[0].value == "") {
-                    document.getElementsByName("smtp_port")[0].value = "465";
-                    document.getElementsByName("smtp_server")[0].value = "smtp.gmail.com";
-                }
-            }
-        }
-    </script>
 </body>
 </html>
