@@ -15,6 +15,24 @@ error_exit() {
 # Trap any errors and call error_exit function
 trap error_exit ERR
 
+# Function to kill process on a given port
+kill_process_on_port() {
+    local port="$1"
+    local pids
+    pids=$(lsof -t -i :"$port")
+    
+    if [ -z "$pids" ]; then
+        echo "No process found on port $port."
+    else
+        echo "Killing processes on port $port: $pids"
+        echo "$pids" | xargs kill -9
+    fi
+}
+
+# Stop anything using necessary ports
+kill_process_on_port 5000
+kill_process_on_port 5001
+
 # Update and upgrade
 apt update && apt -y dist-upgrade && apt -y autoremove
 
@@ -32,21 +50,39 @@ export CAROOT="/home/hush/.local/share/mkcert"
 mkdir -p "$CAROOT"  # Ensure the directory exists
 mkcert -install
 
-# Create a certificate for hushline.local
-echo "Creating certificate for hushline.local..."
-mkcert hushline.local
+# Create a certificate for blackbox.local
+echo "Creating certificate for blackbox.local..."
+mkcert blackbox.local
 
 # Move and link the certificates to Nginx's directory (optional, modify as needed)
-mv hushline.local.pem /etc/nginx/
-mv hushline.local-key.pem /etc/nginx/
-echo "Certificate and key for hushline.local have been created and moved to /etc/nginx/."
+mv blackbox.local.pem /etc/nginx/
+mv blackbox.local-key.pem /etc/nginx/
+echo "Certificate and key for blackbox.local have been created and moved to /etc/nginx/."
+
+# Restore Git repos
+cd /home/hush/blackbox
+git restore --source=HEAD --staged --worktree -- .
+sleep 2
+git reset HEAD -- .
+sleep 2
+git clean -fd .
+sleep 2
+git config pull.rebase false
+sleep 2
+git pull
+sleep 2
+chmod +x /home/hush/blackbox/scripts/install.sh # Make executable when the device reboots 
 
 # Create a virtual environment and install dependencies
 cd /home/hush/hushline
 git restore --source=HEAD --staged --worktree -- .
+sleep 2
 git reset HEAD -- .
+sleep 2
 git clean -fd .
+sleep 2
 git config pull.rebase false
+sleep 2
 git pull
 
 python3 -m venv venv
@@ -68,16 +104,11 @@ pip3 install requests python-gnupg
 pip3 install RPi.GPIO spidev
 apt-get -y autoremove
 
-# Enable SPI interface
-# 0 for enable; 1 to disable
-# See: https://www.raspberrypi.com/documentation/computers/configuration.html#spi-nonint
-raspi-config nonint do_spi 0
-
 # Create a new script to capture information
-mv /home/hush/blackbox/python/blackbox-setup.py /home/hush/hushline
+cp /home/hush/blackbox/python/blackbox-setup.py /home/hush/hushline
 
 # Configure Nginx
-mv /home/hush/blackbox/nginx/hushline-setup.nginx /etc/nginx/sites-available
+cp /home/hush/blackbox/nginx/hushline-setup.nginx /etc/nginx/sites-available
 
 ln -sf /etc/nginx/sites-available/hushline-setup.nginx /etc/nginx/sites-enabled/
 nginx -t && systemctl restart nginx
@@ -88,9 +119,13 @@ fi
 ln -sf /etc/nginx/sites-available/hushline-setup.nginx /etc/nginx/sites-enabled/
 nginx -t && systemctl restart nginx || error_exit
 
-# Create a new script to display status on the e-ink display
-mv /home/hush/blackbox/python/qr-setup.py /home/hush/hushline
-mv /home/hush/blackbox/templates/setup.html /home/hush/hushline/templates
+# Move script to display status on the e-ink display
+cp /home/hush/blackbox/python/qr-setup.py /home/hush/hushline
+cp /home/hush/blackbox/templates/setup.html /home/hush/hushline/templates
+
+# Move new styles
+mv /home/hush/hushline/static/style.css /home/hush/hushline/static/style.css.old
+cp /home/hush/blackbox/static/style.css /home/hush/hushline/static
 
 nohup ./venv/bin/python3 qr-setup.py --host=0.0.0.0 &
 
@@ -99,10 +134,9 @@ nohup ./venv/bin/python3 blackbox-setup.py --host=0.0.0.0 &
 
 sleep 5
 
-# Display the QR code from the file
 cat /tmp/qr_code.txt
 
-echo "The Flask app for setup is running. Please complete the setup by navigating to https://hushline.local/setup."
+echo "The Flask app for setup is running. Please complete the setup by navigating to https://blackbox.local/setup."
 
 # Wait for user to complete setup form
 while [ ! -f "/tmp/setup_config.json" ]; do
@@ -122,7 +156,7 @@ rm /etc/nginx/sites-available/hushline-setup.nginx
 rm /etc/nginx/sites-enabled/hushline-setup.nginx
 
 # Create a systemd service
-cat >/etc/systemd/system/hush-line.service <<EOL
+cat >/etc/systemd/system/blackbox.service <<EOL
 [Unit]
 Description=Hush Line Web App
 After=network.target
@@ -141,12 +175,12 @@ WantedBy=multi-user.target
 EOL
 
 # Make service file read-only and remove temp file
-chmod 444 /etc/systemd/system/hush-line.service
+chmod 444 /etc/systemd/system/blackbox.service
 rm /tmp/setup_config.json
 
 systemctl daemon-reload
-systemctl enable hush-line.service
-systemctl start hush-line.service
+systemctl enable blackbox.service
+systemctl start blackbox.service
 
 # Check if the application is running and listening on the expected address and port
 sleep 5
@@ -166,8 +200,8 @@ sleep 10
 ONION_ADDRESS=$(cat /var/lib/tor/hidden_service/hostname)
 
 # Configure Nginx
-mv /home/hush/blackbox/nginx/hush-line.nginx /etc/nginx/sites-available
-mv /home/hush/blackbox/nginx/nginx.conf /etc/nginx
+cp /home/hush/blackbox/nginx/hush-line.nginx /etc/nginx/sites-available
+cp /home/hush/blackbox/nginx/nginx.conf /etc/nginx
 
 ln -sf /etc/nginx/sites-available/hush-line.nginx /etc/nginx/sites-enabled/
 nginx -t && systemctl restart nginx
@@ -180,7 +214,7 @@ nginx -t && systemctl restart nginx || error_exit
 
 # System status indicator
 display_status_indicator() {
-    local status="$(systemctl is-active hush-line.service)"
+    local status="$(systemctl is-active blackbox.service)"
     if [ "$status" = "active" ]; then
         printf "\n\033[32m●\033[0m Hush Line is running\n$ONION_ADDRESS\n\n"
     else
@@ -188,9 +222,61 @@ display_status_indicator() {
     fi
 }
 
+# Move Blackbox HTML
+mv /home/hush/hushline/templates/index.html /home/hush/hushline/templates/index.html.old
+cp /home/hush/blackbox/templates/index.html /home/hush/hushline/templates
+
+# Create Info Page
+cat >/home/hush/hushline/templates/info.html <<EOL
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="author" content="Science & Design, Inc.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A reasonably private and secure personal tip line.">
+    <meta name="theme-color" content="#7D25C1">
+
+    <title>Blackbox Info</title>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}" sizes="32x32">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/favicon-16x16.png') }}" sizes="16x16">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/android-chrome-192x192.png') }}" sizes="192x192">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/android-chrome-512x512.png') }}" sizes="512x512">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon/favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="info">
+    <header>
+        <div class="wrapper">
+            <h1>B14CKB0X</h1>
+            <a href="https://en.wikipedia.org/wiki/Special:Random" class="btn" rel="noopener noreferrer">Close App</a>
+        </div>
+    </header>
+    <section>
+        <div class="wrapper">
+            <h2>👋<br>Welcome to Blackbox</h2>
+            <p>Blackbox is an anonymous tip line. You should use it when you have information you think shows evidence of wrongdoing, including:</p>
+            <ul>
+                <li>a violation of law, rule, or regulation,</li>
+                <li>gross mismanagement,</li>
+                <li>a gross waste of funds,</li>
+                <li>abuse of authority, or</li>
+                <li>a substantial danger to public health or safety.</li>
+            </ul>
+            <p>To send a Blackbox message, first, <a href="https://www.torproject.org/download/" target="_blank">download Tor Browser</a>, then use it to visit: <pre>$ONION_ADDRESS</pre></p>
+        </div>
+    </section>
+    <script src="{{ url_for('static', filename='jquery-min.js') }}"></script>
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>
+EOL
+
 # Configure Unattended Upgrades
-mv /home/hush/blackbox/config/50unattended-upgrades /etc/apt/apt.conf.d
-mv /home/hush/blackbox/config/20auto-upgrades /etc/apt/apt.conf.d
+cp /home/hush/blackbox/config/50unattended-upgrades /etc/apt/apt.conf.d
+cp /home/hush/blackbox/config/20auto-upgrades /etc/apt/apt.conf.d
 
 systemctl restart unattended-upgrades
 
@@ -204,18 +290,11 @@ systemctl start fail2ban
 systemctl enable fail2ban
 cp /etc/fail2ban/jail.{conf,local}
 
-mv /home/hush/blackbox/config/jail.local /etc/fail2ban
+cp /home/hush/blackbox/config/jail.local /etc/fail2ban
 
 systemctl restart fail2ban
 
-HUSHLINE_PATH=""
-
-# Detect the environment (Raspberry Pi or VPS) based on some characteristic
-if [[ $(uname -n) == *"hushline"* ]]; then
-    HUSHLINE_PATH="/home/hush/hushline"
-else
-    HUSHLINE_PATH="/root/hushline" # Adjusted to /root/hushline for the root user on VPS
-fi
+HUSHLINE_PATH="/home/hush/hushline"
 
 send_email() {
     python3 << END
@@ -231,7 +310,7 @@ warnings.filterwarnings("ignore", category=CryptographyDeprecationWarning)
 
 def send_notification_email(smtp_server, smtp_port, email, password):
     subject = "🎉 Blackbox Installation Complete"
-    message = "Blackbox has been successfully installed! In a moment, your device will reboot.\n\nYou can visit your tip line when you see \"Blackbox is running\" on your e-Paper display. If you can't immediately connect, don't panic; this is normal, as your device's information sometimes takes a few minutes to publish.\n\nYour Hush Line address is:\nhttp://$ONION_ADDRESS\n\nTo send a message, enter your address into Tor Browser. If you still need to download it, get it from https://torproject.org/download.\n\nHush Line is a free and open-source tool by Science & Design, Inc. Learn more about us at https://scidsg.org.\n\nIf you've found this resource useful, please consider making a donation at https://opencollective.com/scidsg."
+    message = "Blackbox has been successfully installed! In a moment, your device will reboot.\n\nYou can visit your tip line when you see \"Blackbox is running\" on your e-Paper display. If you can't immediately connect, don't panic; this is normal, as your device's information sometimes takes a few minutes to publish.\n\nYour Hush Line address is:\nhttp://$ONION_ADDRESS\n\nTo send a message, enter your address into Tor Browser. To find information about your Hush Line, including tips for when to use it, visit: http://$ONION_ADDRESS/info. If you still need to download Tor Browser, get it from https://torproject.org/download.\n\nHush Line is a free and open-source tool by Science & Design, Inc. Learn more about us at https://scidsg.org.\n\nIf you've found this resource useful, please consider making a donation at https://opencollective.com/scidsg."
 
     # Load the public key from its path
     key_path = os.path.expanduser('$HUSHLINE_PATH/public_key.asc')  # Use os to expand the path
@@ -270,7 +349,7 @@ Have feedback? Send us an email at hushline@scidsg.org."
 
 # Display system status on login
 echo "display_status_indicator() {
-    local status=\"\$(systemctl is-active hush-line.service)\"
+    local status=\"\$(systemctl is-active blackbox.service)\"
     if [ \"\$status\" = \"active\" ]; then
         printf \"\n\033[32m●\033[0m Hush Line is running\nhttp://$ONION_ADDRESS\n\n\"
     else
@@ -281,7 +360,7 @@ echo "display_status_indicator() {
 echo "display_status_indicator" >>/etc/bash.bashrc
 source /etc/bash.bashrc
 
-systemctl restart hush-line
+systemctl restart blackbox
 
 send_email
 

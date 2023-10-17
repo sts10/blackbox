@@ -16,7 +16,7 @@ echo "
 ██████  ███████ ██   ██  ██████ ██   ██ ██████   ██████  ██   ██ 
 
 The physical product for Hush Line.
-https://hushline
+https://hushline.app
 "
 sleep 3
 
@@ -45,9 +45,9 @@ RemainAfterExit=yes
 WantedBy=multi-user.target
 EOL
 
-sudo systemctl enable blackbox-installer.service
+systemctl enable blackbox-installer.service
 
-sudo apt-get -y install git python3 python3-venv python3-pip nginx tor libnginx-mod-http-geoip geoip-database unattended-upgrades gunicorn libssl-dev net-tools jq ufw
+apt-get -y install git python3 python3-venv python3-pip nginx tor libnginx-mod-http-geoip geoip-database unattended-upgrades gunicorn libssl-dev net-tools jq ufw
 
 # Install Waveshare e-Paper library
 pip3 install flask setuptools-rust pgpy gunicorn cryptography segno requests
@@ -68,6 +68,7 @@ ufw allow 443/tcp
 
 echo "Disabling SSH access..."
 ufw deny proto tcp from any to any port 22
+# ufw allow ssh
 
 # Logging
 ufw logging on

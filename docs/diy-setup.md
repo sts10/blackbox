@@ -1,6 +1,6 @@
 # Building your own Blackbox
 
-Blackbox is a specific way to set up a program called [Hush Line](https://hushline.app/). There are a few ways to set up a Hush Line. Blackbox is one of the most private and secure. It requires a Raspberry Pi computer and is only accessible via the Tor Browser.
+Blackbox is a specific way to set up a program called [Hush Line](https://hushline.app/). There are a few ways to set up a Hush Line. Blackbox is one of the most private and secure. It requires a Raspberry Pi computer and its resulting form that sources will use is only accessible via the Tor Browser to increase source privacy.
 
 <!-- Most Hush Line users should follow [**this documentation**](https://scidsg.github.io/hushline-docs/book/intro.html). If you'd really like to set up your own Blackbox Hush Line, read and follow the instructions in this document. -->
 
@@ -13,18 +13,18 @@ Blackbox is a specific way to set up a program called [Hush Line](https://hushli
 - **e-ink Screen:** [Waveshare 2.7inch E-Ink Display](https://www.amazon.com/2-7inch-HAT-Resolution-Electronic-Communicating/dp/B075FQKSZ9/?_encoding=UTF8&pd_rd_w=hNy2N&content-id=amzn1.sym.5f7e0a27-49c0-47d3-80b2-fd9271d863ca%3Aamzn1.symc.e5c80209-769f-4ade-a325-2eaec14b8e0e&pf_rd_p=5f7e0a27-49c0-47d3-80b2-fd9271d863ca&pf_rd_r=KQ1ZCPA2Q08D1SW2GYJH&pd_rd_wg=mepbv&pd_rd_r=e97f3e03-7e7d-4165-84e8-3face81f7190&ref_=pd_gw_ci_mcx_mr_hp_atf_m)
 - _Affiliate links_
 
-You'll also need a separate computer which you'll use to decrypt and view Hush Line messages.
+You'll also need a separate computer which you'll use to decrypt and view Blackbox messages.
 
 ## Procedure
 
 **Step 1**: Download Raspberry Pi Imager from [https://www.raspberrypi.com/software/](https://www.raspberrypi.com/software/)
 
 **Step 2**: Insert microSD and prepare to flash Raspberry Pi OS.
-* Choose OS > Raspberry Pi OS (other) > **Legacy Raspberry Pi OS (64-Bit) Bullseye**.
+* Choose OS > Raspberry Pi OS (other) > **Raspberry Pi OS (Legacy)**. Make sure the description says "Debian Bullseye".
 * Select the location of your microSD card.
 * BEFORE you click "Write", click the gear button in the corner.
 Enter these settings:
-    * Hostname = `hushline`
+    * Hostname = `blackbox`
     * Choose to Enable SSH with password authentication
     * User = `hush`
     * Set a strong password
@@ -35,20 +35,18 @@ Enter these settings:
 
 **Step 4**: When the Pi Imager program is done writing, unplug your microSD card from your computer.
 
-**Step 5**: On the back of your Waveshare e-ink display, note which "Rev" it is: e.g. 2.1 or 2.2.
+**Step 5**: Plug MicroSD card in to your Pi. With the power cable NOT plugged in, plug in e-ink screen. Now plug the power cable into the outlet. Your Pi should boot up.
 
-**Step 6**: Plug MicroSD card in to your Pi. With the power cable NOT plugged in, plug in e-ink screen. Now plug the power cable into the outlet. Your Pi should boot up.
+**Step 6**: Wait about 3 minutes for your Pi to boot up.
 
-**Step 7**: Wait about 3 minutes for your Pi to boot up.
+**Step 7**: Back on viewing computer, run `ssh hush@blackbox.local`.
 
-**Step 8**: Back on viewing computer, run `ssh hush@hushline.local`.
+(If you get an error that `ssh: Could not resolve hostname blackbox.local: Name or service not known`, that likely just means that your Pi is still booting up and connecting to your wifi network. Wait a few minutes, and then try again.)
 
-(If you get an error that `ssh: Could not resolve hostname hushline.local: Name or service not known`, that likely just means that your Pi is still booting up and connecting to your wifi network. Wait a few minutes, and then try again.)
-
-**Step 9**: If it was successful, you'll see something like:
+**Step 8**: If it was successful, you'll see something like:
 ```
-$ ssh hush@hushline.local
-The authenticity of host 'hushline.local (192.168.X.XX)' can't be established.
+$ ssh hush@blackbox.local
+The authenticity of host 'blackbox.local (192.168.X.XX)' can't be established.
 ED25519 key fingerprint is SHA256: <fingerprint>
 This key is not known by any other names
 Are you sure you want to continue connecting (yes/no/[fingerprint])?
@@ -56,11 +54,11 @@ Are you sure you want to continue connecting (yes/no/[fingerprint])?
 
 Type `yes` and hit enter.
 
-You'll then be asked to enter "`hush@hushline.local`'s password". Enter the password you created in step 2 (tip: If you need to paste your password, use `command+shift+v`).
+You'll then be asked to enter "`hush@blackbox.local`'s password". Enter the password you created in step 2 (tip: If you need to paste your password, use `command+shift+v`).
 
 If you enter your password correctly, you'll see a message like this:
 ```text
-Linux hushline 6.1.21-v8+ #1642 SMP PREEMPT Mon Apr  3 17:24:16 BST 2023 aarch64
+Linux blackbox 6.1.21-v8+ #1642 SMP PREEMPT Mon Apr  3 17:24:16 BST 2023 aarch64
 
 The programs included with the Debian GNU/Linux system are free software;
 the exact distribution terms for each program are described in the
@@ -68,28 +66,28 @@ individual files in /usr/share/doc/*/copyright.
 
 Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
 permitted by applicable law.
-Last login: Tue May  2 23:23:49 2023
-hush@hushline:~ $
+Last login: Tue May  2 20:36:43 2023
+hush@blackbox:~ $
 ```
 
-**Step 10**:
+**Step 9**:
 
 Next, run
 ```bash
-curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/glenn-sorrentino/blackbox/main/helper.sh | sudo bash
+curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/scidsg/blackbox/main/scripts/helper.sh | sudo bash
 ```
 
-**Step 11**: Once all programs are installed, and you see `hush@hushline:~ $` again, reboot Pi by running `sudo reboot` or unplugging your Pi and then plugging it in again.
+**Step 10**: Once all programs are installed, and you see `hush@blackbox:~ $` again, reboot Pi by running `sudo reboot` or unplugging your Pi and then plugging it in again.
 
-**Step 12**: After your Pi boots up again it will finish installing Hush Line, which may take a few minutes. When it's finished, a QR code will appear on the e-ink screen. This QR code leads to [https://hushline.local/setup](https://hushline.local/setup), where you'll configure your Hush Line.
+**Step 11**: After your Pi boots up again it will finish installing Blackbox, which may take a few minutes. When it's finished, a QR code will appear on the e-ink screen. This QR code leads to [https://blackbox.local/setup](https://blackbox.local/setup), where you'll configure your Blackbox.
 
-**Step 13**: Over on viewing computer, open [https://hushline.local/setup](https://hushline.local/setup) in a browser (ignore any security warnings by clicking "Advanced" -> "Accept the Risk and continue"). Fill out form with your Hush Line email address information (we strongly recommend creating a new email account for Hush Line to use -- Gmail works well. See [this documentation for instructions](https://scidsg.github.io/hushline-docs/book/prereqs/general.html#2-gmail)).
+**Step 12**: Over on viewing computer, open [https://blackbox.local/setup](https://blackbox.local/setup) in a browser (ignore any security warnings by clicking "Advanced" -> "Accept the Risk and continue"). Fill out form with your Blackbox email address information (we strongly recommend creating a new email account for Blackbox to use -- Gmail works well. See [this documentation for more specific instructions](https://scidsg.github.io/hushline-docs/book/prereqs/general.html#2-gmail)).
 
-**Step 14**: Once who've filled out this form, hit submit. In a few minutes, you should receive an encrypted confirmation email to your Hush Line email address, which, among other things, contains your Hush Line URL. Feel free to send a test message to yourself.
+**Step 13**: Once who've filled out this form, hit submit. In a few minutes, you should receive an encrypted confirmation email to your Blackbox email address, which, among other things, contains your Blackbox URL. Feel free to send a test message to yourself.
 
-**Step 15**: Share your new Hush Line URL with your community, along with instructions on how to [download and install the Tor Browser](https://www.torproject.org/download/).
+**Step 14**: Share your new Blackbox URL with your community, along with instructions on how to [download and install the Tor Browser](https://www.torproject.org/download/).
 
-If your community faces [a higher threat](https://scidsg.github.io/hushline-docs/book/prereqs/threat-modeling.html), recommend to them that they better protect their anonymity by only visiting your Hush Line URL on personal devices while using a public WiFi network. [Read more about threat modeling here.](https://scidsg.github.io/hushline-docs/book/prereqs/threat-modeling.html)
+If your community faces [a higher threat](https://scidsg.github.io/hushline-docs/book/prereqs/threat-modeling.html), recommend to them that they better protect their anonymity by only visiting your Blackbox URL on personal devices while using a public WiFi network. [Read more about threat modeling here](https://scidsg.github.io/hushline-docs/book/prereqs/threat-modeling.html).
 
 <!-- ## How to check the status of your Blackbox from the command line -->
 
@@ -101,5 +99,3 @@ If your community faces [a higher threat](https://scidsg.github.io/hushline-docs
 [https://scidsg.github.io/hushline-docs/book/prereqs/raspberrypi.html](https://scidsg.github.io/hushline-docs/book/prereqs/raspberrypi.html)
 
 [https://www.raspberrypi.com/documentation/computers/remote-access.html](https://www.raspberrypi.com/documentation/computers/remote-access.html)
-
-
